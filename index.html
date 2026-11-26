@@ -1,0 +1,3227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BloodSafe ร้องกวาง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ═══════════ tokens ═══════════ */
+:root{
+  --ground:#EEF2F7; --surface:#FFFFFF; --surface-2:#F6F9FC;
+  --line:#D9E1EC; --line-soft:#E8EEF5;
+  --ink:#0F1B2A; --ink-2:#3C4E63; --muted:#6B7C93;
+  --accent:#1A5AA0; --accent-ink:#12457C; --accent-soft:#E4EEF9;
+  --ok:#0F7355; --ok-soft:#DFF1EA;
+  --warn:#A66300; --warn-soft:#FBEEDA;
+  --crit:#B32D22; --crit-soft:#FBE4E1;
+  --shadow:0 1px 2px rgba(15,27,42,.06), 0 8px 24px -12px rgba(15,27,42,.18);
+  --shadow-lg:0 2px 4px rgba(15,27,42,.06), 0 24px 48px -20px rgba(15,27,42,.30);
+  --r:10px; --tap:46px;
+  --sans:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Chakra Petch","IBM Plex Sans Thai",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SF Mono",ui-monospace,Menlo,monospace;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B121B; --surface:#141D28; --surface-2:#1A2531;
+    --line:#293646; --line-soft:#1F2B38;
+    --ink:#E7EEF6; --ink-2:#B4C4D6; --muted:#8298B0;
+    --accent:#63A4E8; --accent-ink:#8FC0F2; --accent-soft:#152A42;
+    --ok:#4FCFA4; --ok-soft:#0E2F26; --warn:#E5A23F; --warn-soft:#33240D;
+    --crit:#F1796A; --crit-soft:#381814;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    --shadow-lg:0 2px 4px rgba(0,0,0,.4), 0 24px 48px -20px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B121B; --surface:#141D28; --surface-2:#1A2531;
+  --line:#293646; --line-soft:#1F2B38;
+  --ink:#E7EEF6; --ink-2:#B4C4D6; --muted:#8298B0;
+  --accent:#63A4E8; --accent-ink:#8FC0F2; --accent-soft:#152A42;
+  --ok:#4FCFA4; --ok-soft:#0E2F26; --warn:#E5A23F; --warn-soft:#33240D;
+  --crit:#F1796A; --crit-soft:#381814;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-lg:0 2px 4px rgba(0,0,0,.4), 0 24px 48px -20px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.spacer{flex:1}
+
+/* show/hide by width */
+.wide-only{display:none}
+@media(min-width:900px){ .wide-only{display:revert} .narrow-only{display:none!important} }
+
+/* ═══════════ demo ribbon ═══════════ */
+.demo-bar{background:var(--warn-soft);color:var(--warn);border-bottom:1px solid var(--line);
+  font-size:12px;padding:6px 14px;text-align:center;line-height:1.4}
+.demo-bar b{font-weight:600}
+.verbar{background:var(--crit);color:#fff;font-size:12.5px;padding:8px 14px;line-height:1.45;
+  display:flex;gap:8px;align-items:flex-start}
+.verbar svg{width:16px;height:16px;flex:0 0 auto;margin-top:2px}
+.verbar b{font-weight:700}
+
+/* ═══════════ login ═══════════ */
+.login-wrap{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:18px;
+  background:radial-gradient(1100px 520px at 80% -10%, var(--accent-soft), transparent 60%), var(--ground)}
+.login-card{width:100%;max-width:940px;background:var(--surface);border:1px solid var(--line);
+  border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;display:grid;grid-template-columns:1.05fr .95fr}
+@media(max-width:860px){.login-card{grid-template-columns:1fr;max-width:520px}}
+.login-side{padding:30px 26px;background:var(--surface-2);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:20px}
+@media(max-width:860px){.login-side{border-right:none;border-bottom:1px solid var(--line);padding:22px 20px;gap:14px}
+  .login-side .flowchain{display:none}}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{width:38px;height:38px;border-radius:9px;background:var(--accent);color:#fff;
+  display:grid;place-items:center;flex:0 0 auto}
+.brand-mark svg{width:21px;height:21px}
+.brand-name{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.1}
+.brand-sub{font-size:12px;color:var(--muted)}
+.login-side h1{font-family:var(--display);font-size:24px;line-height:1.28;margin:0;font-weight:600;text-wrap:balance}
+.login-side p{margin:0;color:var(--ink-2);font-size:14px}
+.flowchain{display:flex;flex-direction:column;margin:0;padding:0}
+.flowchain li{list-style:none;display:grid;grid-template-columns:26px 1fr;gap:12px;padding:9px 0;position:relative}
+.flowchain li:not(:last-child)::before{content:"";position:absolute;left:12.5px;top:31px;bottom:-9px;width:1px;background:var(--line)}
+.flowchain .n{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--surface);
+  display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent)}
+.flowchain .t{font-size:13.5px;color:var(--ink-2);padding-top:2px}
+.flowchain .t b{color:var(--ink);font-weight:600;display:block;font-size:14px}
+.login-main{padding:30px 26px calc(30px + var(--safe-b));display:flex;flex-direction:column;gap:16px}
+.login-main h2{font-family:var(--display);font-size:19px;margin:0;font-weight:600}
+
+/* ═══════════ form controls ═══════════ */
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select,.field textarea{
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:10px 12px;width:100%;min-height:var(--tap);font-size:16px;
+  transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none}
+.field textarea{min-height:76px;line-height:1.5}
+.field select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px,5px 5px;
+  background-repeat:no-repeat;padding-right:36px}
+@media(min-width:900px){.field input,.field select,.field textarea{font-size:14.5px;min-height:40px;padding:8px 11px}
+  .field select{padding-right:32px}}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.field .hint{font-size:12px;color:var(--muted)}
+.field .hint-note{color:var(--accent);font-weight:600}
+/* ─── การแก้ไขย้อนหลังโดยผู้ดูแลระบบ ─── */
+.sect-admin{border:1px dashed var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
+.sect-admin>.sect-h{margin-top:0}
+.reasonbox{border:1px solid var(--accent);border-radius:12px;padding:13px;background:var(--accent-soft)}
+.reasonbox label{font-weight:600}
+.logitem{border-bottom:1px solid var(--line-soft);padding:11px 0}
+.logitem:last-child{border-bottom:none}
+.logitem .lg-top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:13px}
+.logitem .lg-who{font-weight:600}
+.logitem .lg-when{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.logitem .lg-chg{font-family:var(--mono);font-size:12px;color:var(--text);white-space:pre-wrap;
+  margin-top:5px;line-height:1.65}
+.logitem .lg-why{font-size:12.5px;color:var(--muted);margin-top:4px}
+.logitem .lg-why b{color:var(--text)}
+.ptrow{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);
+  border-radius:10px;cursor:pointer;background:var(--surface)}
+.ptrow:hover{border-color:var(--accent)}
+.ptrow .ab{font-family:var(--mono);font-weight:700;color:var(--accent)}
+.ptrow .no-ab{font-size:12px;color:var(--crit);font-weight:600}
+.field .hint-bad{color:var(--crit);font-weight:600}
+/* วันที่ + เวลา อยู่คู่กัน — จอแคบวางซ้อนกันเพื่อให้ปุ่มยังกดง่าย */
+.dtpair{display:flex;gap:8px}
+.dtpair>input{flex:1 1 0;min-width:0}
+.dtpair>input[type="date"]{flex:1.35 1 0}
+@media(max-width:420px){.dtpair{flex-direction:column}}
+.withadd{display:flex;gap:8px;align-items:stretch}
+.withadd select{flex:1;min-width:0}
+.withadd .icon-btn{width:var(--tap);height:auto;min-height:var(--tap);flex:0 0 auto;font-size:20px;font-weight:400;line-height:1}
+@media(min-width:900px){.withadd .icon-btn{width:40px;min-height:40px}}
+optgroup{font-family:var(--sans);font-size:12px;color:var(--muted)}
+optgroup option{color:var(--ink);font-size:15px}
+.jobtag{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:20px;
+  background:var(--accent-soft);color:var(--accent-ink);font-weight:600;white-space:nowrap}
+.jobtag.j-na{background:var(--warn-soft);color:var(--warn)}
+.jobtag.j-lab{background:var(--ok-soft);color:var(--ok)}
+.jobtag.j-other{background:var(--surface-2);color:var(--muted)}
+
+.btn{border:1px solid transparent;border-radius:9px;padding:0 18px;min-height:var(--tap);
+  font-weight:600;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  justify-content:center;background:var(--accent);color:#fff;transition:filter .15s;white-space:nowrap}
+@media(min-width:900px){.btn{min-height:38px;font-size:14px;padding:0 15px}}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{filter:brightness(.92)}
+.btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--line)}
+.btn.ghost:hover{background:var(--surface-2);filter:none}
+.btn.quiet{background:var(--surface-2);color:var(--ink-2);border-color:var(--line)}
+.btn.sm{min-height:38px;padding:0 13px;font-size:13.5px;border-radius:8px}
+.btn.block{width:100%}
+.btn.crit{background:var(--crit);color:#fff;border-color:var(--crit)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.err{color:var(--crit);font-size:13.5px;min-height:18px}
+.acct{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;
+  border:1px solid var(--line);border-radius:9px;padding:8px 11px;cursor:pointer;margin-bottom:7px;min-height:var(--tap)}
+.acct:hover{background:var(--surface-2);border-color:var(--accent)}
+.acct .u{font-family:var(--mono);font-size:13px;font-weight:600}
+.acct .r{margin-left:auto;font-size:11.5px;color:var(--muted);text-align:right}
+.demo-accounts{border-top:1px dashed var(--line);padding-top:14px}
+.demo-accounts h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+
+/* ═══════════ shell ═══════════ */
+.app{display:grid;grid-template-columns:1fr;min-height:100vh;min-height:100dvh}
+@media(min-width:900px){.app{grid-template-columns:228px 1fr}}
+.rail{display:none}
+@media(min-width:900px){
+  .rail{display:flex;background:var(--surface);border-right:1px solid var(--line);padding:16px 12px;
+    flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto}
+}
+.rail-head{display:flex;align-items:center;gap:10px;padding:4px 8px 14px}
+.rail-group{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);
+  padding:14px 10px 5px;font-weight:600}
+.nav{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;
+  background:transparent;border:1px solid transparent;color:var(--ink-2);font-size:14.5px;
+  width:100%;text-align:left;min-height:42px}
+.nav:hover{background:var(--surface-2);color:var(--ink)}
+.nav.on{background:var(--accent-soft);color:var(--accent-ink);
+  border-color:color-mix(in srgb,var(--accent) 22%,transparent);font-weight:600}
+.nav svg{width:18px;height:18px;flex:0 0 auto;opacity:.9}
+.nav .badge{margin-left:auto;background:var(--accent);color:#fff;border-radius:20px;font-size:11px;
+  padding:1px 7px;font-family:var(--mono);font-weight:600}
+
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);
+  padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20}
+@media(min-width:900px){.topbar{padding:12px 22px;gap:14px}}
+.topbar h1{font-family:var(--display);font-size:17px;margin:0;font-weight:600;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:900px){.topbar h1{font-size:18px}}
+.topbar .sub{font-size:12.5px;color:var(--muted);display:none}
+@media(min-width:900px){.topbar .sub{display:block}}
+.userchip{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:22px;
+  padding:4px 6px 4px 11px;background:var(--surface-2);cursor:pointer}
+.userchip .txt{display:none}
+@media(min-width:900px){.userchip .txt{display:block}}
+.userchip .nm{font-size:13px;font-weight:600;line-height:1.2}
+.userchip .rl{font-size:11px;color:var(--muted);line-height:1.2}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;
+  display:grid;place-items:center;font-size:12.5px;font-weight:700;font-family:var(--display);flex:0 0 auto}
+.icon-btn{background:transparent;border:1px solid var(--line);border-radius:9px;
+  width:40px;height:40px;display:grid;place-items:center;cursor:pointer;color:var(--ink-2);flex:0 0 auto}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn svg{width:17px;height:17px}
+
+.content{padding:14px;display:flex;flex-direction:column;gap:14px;max-width:1180px;width:100%;
+  padding-bottom:calc(76px + var(--safe-b))}
+@media(min-width:900px){.content{padding:22px;gap:18px;padding-bottom:22px}}
+
+/* ═══════════ bottom nav (mobile/tablet) ═══════════ */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);
+  border-top:1px solid var(--line);display:flex;padding-bottom:var(--safe-b);
+  box-shadow:0 -2px 12px -6px rgba(15,27,42,.25)}
+@media(min-width:900px){.tabbar{display:none}}
+.tab{flex:1;background:transparent;border:0;cursor:pointer;color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:8px 2px 7px;font-size:10.5px;line-height:1.2;min-height:58px;position:relative;font-weight:500}
+.tab svg{width:21px;height:21px}
+.tab.on{color:var(--accent)}
+.tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:2.5px;
+  background:var(--accent);border-radius:0 0 3px 3px}
+.tab .dot{position:absolute;top:6px;right:calc(50% - 21px);background:var(--crit);color:#fff;
+  border-radius:20px;font-size:10px;font-family:var(--mono);font-weight:600;padding:0 5px;line-height:15px;min-width:16px}
+
+/* ═══════════ cards / kpi ═══════════ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{padding:13px 14px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+@media(min-width:900px){.card-h{padding:14px 16px;gap:10px}}
+.card-h h2{font-family:var(--display);font-size:15px;margin:0;font-weight:600}
+.card-h .note{font-size:12.5px;color:var(--muted)}
+.card-b{padding:14px}
+@media(min-width:900px){.card-b{padding:16px}}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:639px){.kpis>.kpi:last-child:nth-child(odd){grid-column:1/-1}}
+@media(min-width:640px){.kpis{grid-template-columns:repeat(auto-fit,minmax(172px,1fr));gap:12px}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 13px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.kpi.k-ok::before{background:var(--ok)} .kpi.k-warn::before{background:var(--warn)} .kpi.k-crit::before{background:var(--crit)}
+.kpi .lab{font-size:11.5px;color:var(--muted)}
+.kpi .val{font-family:var(--display);font-size:26px;font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums}
+@media(min-width:900px){.kpi .val{font-size:29px}}
+.kpi .val small{font-size:13px;font-weight:500;color:var(--muted);margin-left:3px}
+.kpi .foot{font-size:11.5px;color:var(--muted);margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:880px){.grid2{grid-template-columns:1fr 1fr}}
+/* กัน grid/flex item ดันความกว้างจนหน้าเลื่อนแนวนอน */
+.grid2>*,.card,.card-b,.kpis>*,.baglist>*,.rows>*{min-width:0}
+.tablewrap{max-width:100%}
+
+/* ═══════════ pills ═══════════ */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;
+  padding:3px 9px;border-radius:20px;border:1px solid transparent;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.p-issued{background:var(--accent-soft);color:var(--accent-ink)}
+.p-transfusing{background:var(--warn-soft);color:var(--warn)}
+.p-done{background:var(--ok-soft);color:var(--ok)}
+.p-returned{background:var(--surface-2);color:var(--muted)}
+.p-void{background:var(--surface-2);color:var(--muted);border-color:var(--line);
+  text-decoration:line-through;text-decoration-thickness:1px}
+.p-react{background:var(--crit-soft);color:var(--crit)}
+.tag{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:600;padding:2px 7px;
+  border-radius:5px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+.abo{display:inline-grid;place-items:center;min-width:34px;height:24px;border-radius:6px;
+  font-family:var(--display);font-weight:700;font-size:13px;background:var(--crit-soft);color:var(--crit);padding:0 7px;flex:0 0 auto}
+
+/* ═══════════ table (wide only) ═══════════ */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:900px}
+table.narrow{min-width:420px}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+  font-weight:600;padding:9px 10px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+tbody td{padding:10px 10px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+/* จอกว้างมากค่อยคลายให้หายใจ */
+@media(min-width:1200px){thead th{padding:9px 12px} tbody td{padding:10px 12px}}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+td.nw{white-space:nowrap}
+.pt-name{font-weight:600;white-space:nowrap}
+.pt-hn{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+/* วันที่+เวลาซ้อนกัน 2 บรรทัด ตารางจะได้ไม่กว้างจนต้องเลื่อน */
+.dt-d{font-family:var(--mono);white-space:nowrap}
+.dt-t{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.dt-next{color:var(--accent);font-weight:600}
+.empty{padding:30px 14px;text-align:center;color:var(--muted);font-size:14px}
+
+/* ═══════════ filters ═══════════ */
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.filters .f-wide{grid-column:1/-1}
+@media(min-width:760px){.filters{display:flex;flex-wrap:wrap;align-items:flex-end}
+  .filters .field{min-width:148px;flex:0 1 auto}.filters .f-wide{min-width:230px}}
+
+/* ═══════════ forms ═══════════ */
+.formgrid{display:grid;grid-template-columns:1fr;gap:13px}
+@media(min-width:600px){.formgrid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}}
+.formgrid .full{grid-column:1/-1}
+.sect{border-top:1px solid var(--line-soft);padding-top:16px}
+.sect:first-of-type{border-top:none;padding-top:0}
+.sect-h{display:flex;align-items:baseline;gap:9px;margin-bottom:12px;flex-wrap:wrap}
+.sect-h .step{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);
+  border:1px solid var(--line);border-radius:5px;padding:1px 6px;background:var(--accent-soft)}
+.sect-h h3{font-family:var(--display);font-size:14.5px;margin:0;font-weight:600}
+.sect-h .why{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:600px){.sect-h .why{margin-left:0;width:100%}}
+.sublabel{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:7px}
+.checks{display:grid;grid-template-columns:1fr;gap:2px}
+@media(min-width:600px){.checks{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:4px 12px}}
+.chk{display:flex;align-items:center;gap:11px;font-size:14.5px;padding:9px 10px;border-radius:9px;
+  cursor:pointer;border:1px solid transparent;min-height:var(--tap)}
+.chk:hover{background:var(--surface-2)}
+.chk input{accent-color:var(--accent);width:20px;height:20px;flex:0 0 auto;margin:0}
+.chk.big{border:1px solid var(--line);background:var(--surface-2)}
+.chk.big.done{border-color:var(--ok);background:var(--ok-soft)}
+.radios{display:flex;gap:9px;flex-wrap:wrap}
+.radio{border:1px solid var(--line);border-radius:9px;padding:0 15px;cursor:pointer;font-size:14.5px;
+  display:flex;align-items:center;gap:8px;background:var(--surface);min-height:var(--tap);flex:1 1 auto;justify-content:center}
+@media(min-width:600px){.radio{flex:0 0 auto;justify-content:flex-start}}
+.radio input{accent-color:var(--accent);width:18px;height:18px}
+.radio.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.radio.on-crit{background:var(--crit-soft);border-color:var(--crit);color:var(--crit);font-weight:600}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions .btn{flex:1 1 auto}
+@media(min-width:600px){.actions .btn{flex:0 0 auto}}
+/* sticky save bar on small screens */
+.stickybar{position:sticky;bottom:calc(var(--safe-b));z-index:15;background:var(--surface);
+  border-top:1px solid var(--line);margin:0 -14px -14px;padding:12px 14px calc(12px + var(--safe-b));
+  display:flex;gap:9px;flex-wrap:wrap}
+.stickybar .btn{flex:1 1 130px}
+@media(min-width:900px){.stickybar{position:static;background:transparent;border-top:1px solid var(--line-soft);
+  margin:0;padding:16px 0 0}.stickybar .btn{flex:0 0 auto}}
+
+/* ═══════════ alerts ═══════════ */
+.alert{display:flex;gap:10px;padding:11px 13px;border-radius:9px;font-size:13.5px;border:1px solid;align-items:flex-start}
+.alert svg{width:18px;height:18px;flex:0 0 auto;margin-top:1px}
+.a-warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 30%,transparent);color:var(--warn)}
+.a-crit{background:var(--crit-soft);border-color:color-mix(in srgb,var(--crit) 30%,transparent);color:var(--crit)}
+.a-ok{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 30%,transparent);color:var(--ok)}
+.a-info{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 25%,transparent);color:var(--accent-ink)}
+.alert b{font-weight:600}
+
+/* ═══════════ bag cards ═══════════ */
+.baglist{display:grid;grid-template-columns:1fr;gap:11px}
+@media(min-width:620px){.baglist{grid-template-columns:repeat(auto-fill,minmax(288px,1fr));gap:12px}}
+.bag{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.bag .stripe{height:3px;background:var(--accent)}
+.bag.s-transfusing .stripe{background:var(--warn)}
+.bag.s-done .stripe{background:var(--ok)}
+.bag.s-returned .stripe{background:var(--muted)}
+.bag-b{padding:12px 13px;display:flex;flex-direction:column;gap:9px;flex:1}
+.bag-top{display:flex;align-items:flex-start;gap:9px}
+.bag-top .who{min-width:0;flex:1}
+.bag-top .who .nm{font-weight:600;font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bag-meta{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:12.5px;margin:0}
+.bag-meta dt{color:var(--muted)}
+.bag-meta dd{margin:0;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;
+  overflow:hidden;text-overflow:ellipsis}
+.bag-foot{display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:4px;flex-wrap:wrap}
+.bag-foot .btn{flex:1 1 auto}
+.bag-sp{display:none}
+@media(min-width:620px){.bag-sp{display:block;flex:1}}
+@media(min-width:620px){.bag-foot .btn{flex:0 0 auto}}
+
+/* ═══════════ record rows (narrow registry) ═══════════ */
+.rows{display:flex;flex-direction:column;gap:9px}
+.row-c{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:11px 12px;display:flex;flex-direction:column;gap:8px;cursor:pointer;box-shadow:var(--shadow)}
+.row-c:active{background:var(--surface-2)}
+.row-top{display:flex;align-items:flex-start;gap:8px}
+.row-top .nm{font-weight:600;font-size:14.5px;line-height:1.3;min-width:0;flex:1}
+.row-sub{font-size:12.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row-sub .mono{color:var(--ink-2)}
+.row-foot{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+
+/* ═══════════ chart ═══════════ */
+.bars{display:flex;flex-direction:column;gap:9px}
+.barrow{display:grid;grid-template-columns:96px 1fr 36px;gap:9px;align-items:center;font-size:13px}
+@media(min-width:600px){.barrow{grid-template-columns:126px 1fr 42px;gap:10px}}
+.barrow .lb{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bartrack{display:block;height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;border:1px solid var(--line-soft)}
+.barfill{display:block;height:100%;background:var(--accent);border-radius:5px;min-width:3px}
+.barfill.b2{background:color-mix(in srgb,var(--accent) 62%,var(--surface))}
+.barfill.b3{background:color-mix(in srgb,var(--accent) 38%,var(--surface))}
+.barrow .vv{text-align:right;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.spark{width:100%;height:74px;display:block}
+
+/* ═══════════ modal / sheet ═══════════ */
+.overlay{position:fixed;inset:0;background:rgba(10,18,28,.55);z-index:60;
+  display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:700px){.overlay{align-items:center;padding:20px}}
+.modal{background:var(--surface);border:1px solid var(--line);width:100%;
+  border-radius:16px 16px 0 0;box-shadow:var(--shadow-lg);max-height:92vh;max-height:92dvh;overflow:auto;
+  animation:sheetUp .22s ease-out}
+@media(min-width:700px){.modal{max-width:640px;border-radius:14px;max-height:88vh;animation:none}}
+@keyframes sheetUp{from{transform:translateY(18px);opacity:.6}to{transform:none;opacity:1}}
+.modal-h{padding:14px 16px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px;
+  position:sticky;top:0;background:var(--surface);z-index:2;flex-wrap:wrap}
+.modal-h svg{width:18px;height:18px;flex:0 0 auto;color:var(--accent)}
+.modal-h h3{font-family:var(--display);margin:0;font-size:16px;font-weight:600}
+.modal-b{padding:16px;padding-bottom:calc(16px + var(--safe-b));display:flex;flex-direction:column;gap:15px}
+.grab{width:36px;height:4px;border-radius:3px;background:var(--line);margin:8px auto 0}
+@media(min-width:700px){.grab{display:none}}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:13.5px;margin:0}
+.dl dt{color:var(--muted)}
+.dl dd{margin:0;min-width:0;overflow-wrap:anywhere}
+
+/* ═══════════ toast / loader ═══════════ */
+.toast{position:fixed;bottom:calc(74px + var(--safe-b));left:50%;transform:translateX(-50%);z-index:80;
+  background:var(--ink);color:var(--ground);padding:11px 18px;border-radius:22px;font-size:13.5px;
+  box-shadow:var(--shadow-lg);display:flex;gap:9px;align-items:center;max-width:calc(100vw - 28px);
+  animation:sheetUp .2s ease-out}
+@media(min-width:900px){.toast{bottom:22px}}
+.toast svg{width:17px;height:17px;flex:0 0 auto}
+.toast.bad{background:var(--crit);color:#fff}
+.syncpill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:4px 10px;
+  white-space:nowrap;flex:0 0 auto;max-width:52vw;overflow:hidden}
+.syncpill .spin{width:11px;height:11px;border-width:2px}
+.syncpill svg{width:12px;height:12px}
+.syncpill.old{background:var(--warn-soft);color:var(--warn);
+  border-color:color-mix(in srgb,var(--warn) 30%,transparent);cursor:pointer}
+.syncpill.bad{background:var(--crit-soft);color:var(--crit);
+  border-color:color-mix(in srgb,var(--crit) 30%,transparent);cursor:pointer}
+.fybar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;box-shadow:var(--shadow)}
+.fybar .lbl{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.fybar select{background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:8px 32px 8px 11px;min-height:40px;font-size:15px;font-weight:600;font-family:var(--display);
+  appearance:none;-webkit-appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.fybar select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.fybar .range{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.fybar .now{font-size:11.5px;background:var(--ok-soft);color:var(--ok);border-radius:20px;
+  padding:2px 9px;font-weight:600;white-space:nowrap}
+.mchart{width:100%;height:150px;display:block}
+.mrow{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);
+  font-variant-numeric:tabular-nums;margin-top:2px}
+.stamp{font-size:11.5px;color:var(--muted);white-space:nowrap;display:none}
+@media(min-width:720px){.stamp{display:inline}}
+.loader{position:fixed;inset:0;background:color-mix(in srgb,var(--ground) 72%,transparent);z-index:90;
+  display:grid;place-items:center;gap:12px}
+.spin{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--accent);
+  border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.skel{background:linear-gradient(90deg,var(--surface-2),var(--line-soft),var(--surface-2));
+  background-size:200% 100%;animation:sk 1.3s linear infinite;border-radius:8px;height:14px}
+@keyframes sk{to{background-position:-200% 0}}
+</style>
+</head>
+<body>
+<div id="root"><div class="loader"><div class="spin"></div></div></div>
+<div id="ovl" class="loader hide"><div class="spin"></div></div>
+<div id="tst" class="toast hide"></div>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════
+   0. โหมดการทำงาน — ต่อกับ Google Apps Script ถ้ามี
+      ถ้าเปิดไฟล์นี้เดี่ยว ๆ จะทำงานเป็นตัวอย่างพร้อมข้อมูลจำลอง
+   ═══════════════════════════════════════════════════════════ */
+/** ต้องตรงกับ APP_VERSION ในไฟล์ Code.gs — ถ้าไม่ตรงจะขึ้นแถบเตือนบนหน้าจอ */
+var UI_VERSION = "2.6";
+/**
+ * รูปแบบข้อมูลที่หน้าเว็บนี้อ่านได้
+ * 3 = รับข้อมูลทั้งชุดเป็นข้อความ JSON ก้อนเดียว
+ *     จำเป็น เพราะ sandbox ของ Apps Script แปลงอาร์เรย์ที่ซ้อนอยู่ในออบเจ็กต์
+ *     ให้กลายเป็นออบเจ็กต์คีย์ตัวเลข ทำให้อ่านข้อมูลไม่ออกทั้งหน้า
+ */
+var PROTOCOL = 3;
+
+/* ⚙️ URL ของ web app (ลงท้าย /exec) จาก Deploy > Manage deployments
+   ใส่แล้ว → วางไฟล์นี้บน GitHub Pages / server ของ IT ได้ ไม่ผูกกับบัญชี Google ในเบราว์เซอร์
+   ยังไม่ใส่ (ค่าเดิม) → เปิดไฟล์เดี่ยว ๆ จะเป็นโหมดตัวอย่าง */
+var API_URL = "https://script.google.com/macros/s/AKfycbwtdbzjK4gOOzruHXVwtIB0WTD03m-s9lpStvS2M6WV9WyDX27N9Vwo8eu27FAtyidv/exec";
+var VIA_GAS = !!(typeof google !== "undefined" && google.script && google.script.run);
+var REMOTE = !VIA_GAS && /^https:\/\/script\.google\.com\/.+\/exec$/.test(API_URL) && API_URL.indexOf("ใส่รหัส") < 0;
+var LIVE = VIA_GAS || REMOTE;
+
+/** แนบรูปแบบข้อมูลที่หน้าเว็บนี้อ่านได้ไปกับทุกคำขอ */
+function withPv(payload){
+  var o = {pv: PROTOCOL};
+  if (payload) for (var k in payload) if (Object.prototype.hasOwnProperty.call(payload, k)) o[k] = payload[k];
+  return o;
+}
+
+/**
+ * ออบเจ็กต์ที่มีคีย์เป็น 0,1,2,… ต่อเนื่อง คืออาร์เรย์ที่ถูก sandbox แปลงร่างมา
+ * ฟังก์ชันนี้แปลงกลับเป็นอาร์เรย์ตามเดิม
+ */
+function looksLikeArray(o){
+  if (!o || typeof o !== "object" || o instanceof Array) return false;
+  var keys = Object.keys(o);
+  if (!keys.length) return false;
+  for (var i = 0; i < keys.length; i++) if (String(i) !== keys[i]) return false;
+  return true;
+}
+function fixArrays(v){
+  if (v instanceof Array) return v.map(fixArrays);
+  if (looksLikeArray(v)) {
+    var out = [], k = Object.keys(v);
+    for (var i = 0; i < k.length; i++) out.push(fixArrays(v[k[i]]));
+    return out;
+  }
+  if (v && typeof v === "object") {
+    var o = {};
+    for (var key in v) if (Object.prototype.hasOwnProperty.call(v, key)) o[key] = fixArrays(v[key]);
+    return o;
+  }
+  return v;
+}
+
+/** ข้อความจากระบบเราเป็นภาษาไทยเสมอ ถ้าเจอข้อความอื่นแปลว่าเป็นปัญหาการเชื่อมต่อ */
+function friendlyErr(m){
+  m = String(m == null ? "" : m);
+  if (/[\u0E00-\u0E7F]/.test(m)) return m;
+  return "ติดต่อเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบสัญญาณอินเทอร์เน็ตแล้วลองใหม่ (ข้อมูลที่กรอกไว้ยังอยู่)";
+}
+
+/** ผลที่ได้จาก Code.gs → ข้อมูลพร้อมใช้ (ใช้ร่วมกันทั้งแบบ google.script.run และแบบ fetch) */
+function unwrapResult(r, res, rej){
+  if (!r || !r.ok) return rej(new Error(friendlyErr(r && r.error)));
+  if (typeof r.json === "string") {
+    try { res(JSON.parse(r.json)); }
+    catch(err){ rej(new Error("อ่านข้อมูลจากเซิร์ฟเวอร์ไม่ได้ — กรุณาลองใหม่")); }
+  } else {
+    res(fixArrays(r.data));
+  }
+}
+
+function rpc(action, payload){
+  if (REMOTE) {
+    S.transport = "JSON API ผ่าน fetch (หน้าเว็บภายนอก)";
+    return fetch(API_URL, {
+      method: "POST", credentials: "omit", redirect: "follow",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},   // text/plain = ไม่ต้อง preflight
+      body: JSON.stringify({action: action, payload: withPv(payload), token: store("bs_token")})
+    }).catch(function(){
+      throw new Error("ติดต่อเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบสัญญาณอินเทอร์เน็ตแล้วลองใหม่ (ข้อมูลที่กรอกไว้ยังอยู่)");
+    }).then(function(resp){
+      if (!resp.ok) throw new Error("เซิร์ฟเวอร์ตอบกลับผิดพลาด (" + resp.status + ") — กรุณาลองใหม่");
+      return resp.text();
+    }).then(function(t){
+      var r;
+      try { r = JSON.parse(t); }
+      catch(e){ throw new Error("ระบบตอบกลับไม่ถูกต้อง — ตรวจสอบ API_URL และการ Deploy (Who has access: Anyone)"); }
+      return new Promise(function(res, rej){ unwrapResult(r, res, rej); });
+    });
+  }
+  if (VIA_GAS) {
+    return new Promise(function(res, rej){
+      google.script.run
+        .withSuccessHandler(function(r){
+          S.transport = (r && typeof r.json === "string") ? "ข้อความ JSON (ปลอดภัย)" : "แบบเก่า (เสี่ยงข้อมูลเพี้ยน)";
+          unwrapResult(r, res, rej);
+        })
+        .withFailureHandler(function(e){ rej(new Error(friendlyErr(e && e.message))); })
+        .api(action, withPv(payload), store("bs_token"));
+    });
+  }
+  return demoRpc(action, payload||{});
+}
+
+/** token และแคชข้อมูลผู้ป่วยเก็บใน sessionStorage — ปิดเบราว์เซอร์แล้วหายเอง
+ *  (เครื่องในหอผู้ป่วยใช้ร่วมกัน คนถัดไปจะไม่ได้เข้าระบบในชื่อคนก่อน และไม่เห็นข้อมูลค้างในเครื่อง) */
+function isPrivateKey(k){ return k === "bs_token" || String(k).indexOf("bs_cache") === 0; }
+function store(k, v){
+  try { var st = isPrivateKey(k) ? sessionStorage : localStorage;
+        if (v === undefined) return st.getItem(k);
+        if (v === null) st.removeItem(k); else st.setItem(k, v); }
+  catch(e){ window.__mem = window.__mem||{};
+            if (v === undefined) return window.__mem[k]||null;
+            if (v === null) delete window.__mem[k]; else window.__mem[k]=v; }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   1. ข้อมูลจำลอง (ใช้เฉพาะตอนเปิดนอก Apps Script)
+   ═══════════════════════════════════════════════════════════ */
+var DEMO_USERS = [
+  {username:"admin",  pin:"1234", name:"ผู้ดูแลระบบ",       role:"admin", unit:"—"},
+  {username:"lab01",  pin:"1234", name:"ศรีสุดา ทดลองงาน",   role:"lab",   unit:"Lab"},
+  {username:"lab02",  pin:"1234", name:"จิราพร ทดลองงาน",      role:"lab",   unit:"Lab"},
+  {username:"ward01", pin:"1234", name:"ประไพ ทดลองงาน",     role:"ward",  unit:"Ward"},
+  {username:"ward02", pin:"1234", name:"อำไพ ทดลองงาน",     role:"ward",  unit:"Ward"},
+  {username:"lr01",   pin:"1234", name:"สมพร ทดลองงาน",       role:"lr",    unit:"LR"},
+  {username:"hd01",   pin:"1234", name:"พิมพ์ใจ ทดลองงาน",    role:"hd",    unit:"ไตเทียม"}
+];
+var DEMO_CONFIG = {
+  components:["PRC","LPRC","FFP","Platelet concentrate","Cryoprecipitate","Whole blood"],
+  diagnoses:["Anemia","ESRD","other CKD","Thalassemia","HbH disease","GI bleeding","Post-op blood loss","Malignancy","PPH (ตกเลือดหลังคลอด)","อื่น ๆ"],
+  units:["Ward","LR","ไตเทียม","ER","OPD"],
+  symptoms:["ไข้ (อุณหภูมิสูงขึ้น ≥ 1°C)","หนาวสั่น (Chill)","ผื่นลมพิษ (Urticaria)","คัน (Itching)","หายใจลำบาก / เหนื่อย","แน่นหน้าอก","ปวดหลัง / ปวดเอว","ปวดศีรษะ","คลื่นไส้ / อาเจียน","ความดันโลหิตต่ำลง","ความดันโลหิตสูงขึ้น","ปัสสาวะสีเข้ม / Hemoglobinuria","บวมรอบตา / หน้าบวม","ช็อก","อื่น ๆ"],
+  actions:["หยุดให้เลือดทันที","เปลี่ยนสารน้ำเป็น 0.9% NSS","รายงานแพทย์เวร","ให้ยาตามแผนการรักษา","ส่งถุงเลือดและตัวอย่างเลือดคืนห้อง Lab","เฝ้าสังเกตอาการต่อเนื่อง","ให้เลือดต่อตามคำสั่งแพทย์","ส่งต่อ (Refer)"],
+  returnReasons:["แพทย์ยกเลิกคำสั่ง","ผู้ป่วยเกิดปฏิกิริยา","ผู้ป่วย refer","เลือดหมดอายุ / เกินเวลา","ถุงเลือดรั่ว / ชำรุด","ข้อมูลถุงเลือดไม่ตรงกับผู้ป่วย","อื่น ๆ"],
+  rbcLook:["ปกติ","สีคล้ำผิดปกติ","มีลิ่มเลือด","มีฟองอากาศ","สงสัย hemolysis"],
+  returnCond:["ปกติ ถุงปิดสนิท","เปิดใช้บางส่วน","ถุงรั่ว / ชำรุด","สงสัย hemolysis"],
+  jobs:["พยาบาล","ผู้ช่วยพยาบาล","เจ้าหน้าที่ห้องปฏิบัติการ","อื่น ๆ"],
+  tempLimit:"10", hospital:"โรงพยาบาลร้องกวาง จ.แพร่"
+};
+var DEMO_PATIENTS = [
+  {hn:"900000006", name:"นางผู้ป่วยตัวอย่าง 03", abo:"B",  rh:"Rh+"},
+  {hn:"900000008", name:"นายผู้ป่วยตัวอย่าง 08",      abo:"A",  rh:"Rh+"},
+  {hn:"900000004", name:"นายผู้ป่วยตัวอย่าง 05",     abo:"O",  rh:"Rh+"},
+  {hn:"900000005", name:"นางผู้ป่วยตัวอย่าง 01", abo:"O",  rh:"Rh+"},
+  {hn:"900000001", name:"นายผู้ป่วยตัวอย่าง 09",        abo:"A",  rh:"Rh+"},
+  {hn:"900000007", name:"นางผู้ป่วยตัวอย่าง 06",       abo:"A",  rh:"Rh+"},
+  {hn:"900000003", name:"น.ส.ผู้ป่วยตัวอย่าง 04",   abo:"O",  rh:"Rh+"},
+  {hn:"900000002", name:"นายผู้ป่วยตัวอย่าง 10",          abo:"B",  rh:"Rh+"},
+  {hn:"900000010", name:"น.ส.ผู้ป่วยตัวอย่าง 07",      abo:"AB", rh:"Rh+"},
+  {hn:"900000009", name:"นางผู้ป่วยตัวอย่าง 02",  abo:"O",  rh:"Rh+"}
+];
+var DEMO_STAFF = [
+  {unit:"LR",name:"นางสมพร ทดลองงาน",job:"พยาบาล"},{unit:"LR",name:"น.ส.ดวงใจ ทดลองงาน",job:"พยาบาล"},
+  {unit:"LR",name:"นางสมศรี ทดลองงาน",job:"พยาบาล"},{unit:"LR",name:"น.ส.เพ็ญศรี ทดลองงาน",job:"พยาบาล"},
+  {unit:"LR",name:"น.ส.ลำดวน ทดลองงาน",job:"พยาบาล"},{unit:"LR",name:"น.ส.ปราณี ทดลองงาน",job:"พยาบาล"},
+  {unit:"LR",name:"น.ส.ชูใจ ทดลองงาน",job:"ผู้ช่วยพยาบาล"},{unit:"LR",name:"น.ส.สมหญิง ทดลองงาน",job:"ผู้ช่วยพยาบาล"},
+  {unit:"Ward",name:"น.ส.อรุณี ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"นางยุพิน ทดลองงาน",job:"พยาบาล"},
+  {unit:"Ward",name:"นางอำไพ ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"นางพิมพ์ใจ ทดลองงาน",job:"พยาบาล"},
+  {unit:"Ward",name:"นางรัตนา ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"นางแก้วตา ทดลองงาน",job:"พยาบาล"},
+  {unit:"Ward",name:"น.ส.มาลี ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"นางประไพ ทดลองงาน",job:"พยาบาล"},
+  {unit:"Ward",name:"นางบุษบา ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"นางวันดี ทดลองงาน",job:"พยาบาล"},
+  {unit:"Ward",name:"น.ส.สุดา ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"น.ส.สมใจ ทดลองงาน",job:"พยาบาล"},
+  {unit:"Ward",name:"น.ส.ละเอียด ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"นางวาสนา ทดลองงาน",job:"พยาบาล"},
+  {unit:"Ward",name:"น.ส.ใจดี ทดลองงาน",job:"พยาบาล"},{unit:"Ward",name:"น.ส.จันทร์เพ็ญ ทดลองงาน",job:"ผู้ช่วยพยาบาล"},
+  {unit:"Ward",name:"น.ส.บุญมา ทดลองงาน",job:"ผู้ช่วยพยาบาล"},{unit:"Ward",name:"น.ส.สุขใจ ทดลองงาน",job:"ผู้ช่วยพยาบาล"},
+  {unit:"ไตเทียม",name:"นางนงลักษณ์ ทดลองงาน",job:"พยาบาล"},{unit:"ไตเทียม",name:"น.ส.บัวผัน ทดลองงาน",job:"ผู้ช่วยพยาบาล"},
+  {unit:"Lab",name:"นางศรีสุดา ทดลองงาน",job:"เจ้าหน้าที่ห้องปฏิบัติการ"},
+  {unit:"Lab",name:"น.ส.จิราพร ทดลองงาน",job:"เจ้าหน้าที่ห้องปฏิบัติการ"},
+  {unit:"Lab",name:"น.ส.กาญจนา ทดลองงาน",job:"เจ้าหน้าที่ห้องปฏิบัติการ"},
+  {unit:"",name:"อุไร ทดลองงาน",job:"ผู้ช่วยพยาบาล"},
+  {unit:"",name:"ทองใบ ทดลองงาน",job:"ผู้ช่วยพยาบาล"},
+  {unit:"",name:"สายใจ ทดลองงาน",job:"ผู้ช่วยพยาบาล"}
+];
+
+var DEMO_BAGS = [
+  {id:"BG00001",donorNo:"99900000002",comp:"LPRC",donorAbo:"B",hn:"900000006",issuedAt:"2025-09-10T13:45",labIssuer:"น.ส.จิราพร ทดลองงาน",carrier:"อุไร ทดลองงาน",tempOut:7,unit:"Ward",status:"DONE",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:6,dx:"Anemia",volume:290,checker:"นางยุพิน ทดลองงาน",giver:"นางประไพ ทดลองงาน",startD:"2025-09-10",start:"13:48",endD:"2025-09-10",end:"17:50",reaction:false,reactAt:"",symptoms:[],actions:[],setLeft:"ไม่มี",leak:"ไม่มี",rbc:"ปกติ",note:""}},
+  {id:"BG00002",donorNo:"99900000012",comp:"PRC",donorAbo:"A",hn:"900000008",issuedAt:"2025-09-11T14:55",labIssuer:"นางศรีสุดา ทดลองงาน",carrier:"ทองใบ ทดลองงาน",tempOut:6,unit:"ไตเทียม",status:"DONE",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:8,dx:"ESRD",volume:300,checker:"นางพิมพ์ใจ ทดลองงาน",giver:"นางนงลักษณ์ ทดลองงาน",startD:"2025-09-11",start:"14:30",endD:"2025-09-11",end:"18:10",reaction:false,reactAt:"",symptoms:[],actions:[],setLeft:"ไม่มี",leak:"ไม่มี",rbc:"ปกติ",note:""}},
+  {id:"BG00003",donorNo:"99900000003",comp:"LPRC",donorAbo:"B",hn:"900000006",issuedAt:"2025-09-11T14:58",labIssuer:"นางศรีสุดา ทดลองงาน",carrier:"ทองใบ ทดลองงาน",tempOut:6,unit:"Ward",status:"DONE",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:8,dx:"other CKD",volume:250,checker:"นางอำไพ ทดลองงาน",giver:"นางพิมพ์ใจ ทดลองงาน",startD:"2025-09-11",start:"13:50",endD:"2025-09-11",end:"18:00",reaction:false,reactAt:"",symptoms:[],actions:[],setLeft:"ไม่มี",leak:"ไม่มี",rbc:"ปกติ",note:""}},
+  {id:"BG00004",donorNo:"99900000005",comp:"LPRC",donorAbo:"O",hn:"900000004",issuedAt:"2025-09-15T10:32",labIssuer:"นางศรีสุดา ทดลองงาน",carrier:"อุไร ทดลองงาน",tempOut:7,unit:"Ward",status:"DONE",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:8,dx:"Thalassemia",volume:270,checker:"นางประไพ ทดลองงาน",giver:"น.ส.จันทร์เพ็ญ ทดลองงาน",startD:"2025-09-15",start:"10:40",endD:"2025-09-15",end:"14:00",reaction:false,reactAt:"",symptoms:[],actions:[],setLeft:"ไม่มี",leak:"ไม่มี",rbc:"ปกติ",note:""}},
+  {id:"BG00005",donorNo:"99900000007",comp:"PRC",donorAbo:"O",hn:"900000005",issuedAt:"2025-09-16T18:05",labIssuer:"น.ส.กาญจนา ทดลองงาน",carrier:"สายใจ ทดลองงาน",tempOut:6,unit:"Ward",status:"DONE",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:8,dx:"HbH disease",volume:230,checker:"น.ส.ใจดี ทดลองงาน",giver:"น.ส.สุขใจ ทดลองงาน",startD:"2025-09-16",start:"18:40",endD:"2025-09-16",end:"23:00",reaction:true,reactAt:"19:50",
+       symptoms:["หนาวสั่น (Chill)","ไข้ (อุณหภูมิสูงขึ้น ≥ 1°C)"],actions:["หยุดให้เลือดทันที","รายงานแพทย์เวร","ให้เลือดต่อตามคำสั่งแพทย์","เฝ้าสังเกตอาการต่อเนื่อง"],
+       setLeft:"มี",leak:"ไม่มี",rbc:"ปกติ",note:"hold เลือด + รายงานแพทย์เวร แพทย์มีคำสั่งให้เลือดตามเดิม + Obs. อาการ"}},
+  {id:"BG00006",donorNo:"99900000001",comp:"PRC",donorAbo:"A",hn:"900000001",issuedAt:"2025-09-18T16:50",labIssuer:"นางศรีสุดา ทดลองงาน",carrier:"อุไร ทดลองงาน",tempOut:6,unit:"Ward",status:"DONE",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:8,dx:"Anemia",volume:210,checker:"นางวาสนา ทดลองงาน",giver:"น.ส.มาลี ทดลองงาน",startD:"2025-09-18",start:"17:25",endD:"2025-09-18",end:"20:45",reaction:false,reactAt:"",symptoms:[],actions:[],setLeft:"ไม่มี",leak:"ไม่มี",rbc:"ปกติ",note:""}},
+  {id:"BG00007",donorNo:"99900000013",comp:"PRC",donorAbo:"A",hn:"900000001",issuedAt:"2025-09-20T11:05",labIssuer:"น.ส.จิราพร ทดลองงาน",carrier:"สายใจ ทดลองงาน",tempOut:6,unit:"ไตเทียม",status:"DONE",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:6,dx:"ESRD",volume:260,checker:"น.ส.บัวผัน ทดลองงาน",giver:"นางนงลักษณ์ ทดลองงาน",startD:"2025-09-20",start:"11:30",endD:"2025-09-20",end:"15:00",reaction:false,reactAt:"",symptoms:[],actions:[],setLeft:"ไม่มี",leak:"ไม่มี",rbc:"ปกติ",note:""}},
+  {id:"BG00008",donorNo:"99900000008",comp:"LPRC",donorAbo:"O",hn:"900000007",issuedAt:"2025-09-20T10:40",labIssuer:"นางศรีสุดา ทดลองงาน",carrier:"ทองใบ ทดลองงาน",tempOut:6,unit:"Ward",status:"RETURNED",
+   ret:{at:"2025-09-20T12:10",reason:"ผู้ป่วย refer",by:"นางรัตนา ทดลองงาน",labReceiver:"นางศรีสุดา ทดลองงาน",tempBack:9,cond:"ปกติ ถุงปิดสนิท",note:"refer รพ.แพร่ ก่อนเริ่มให้เลือด"}},
+  {id:"BG00009",donorNo:"99900000004",comp:"PRC",donorAbo:"O",hn:"900000005",issuedAt:"2025-09-23T13:20",labIssuer:"น.ส.กาญจนา ทดลองงาน",carrier:"สายใจ ทดลองงาน",tempOut:7,unit:"Ward",status:"TRANSFUSING",
+   tx:{v1:1,v2:1,v3:1,v4:1,tempIn:8,dx:"Thalassemia",volume:260,checker:"นางบุษบา ทดลองงาน",giver:"นางวันดี ทดลองงาน",startD:"2025-09-23",start:"14:25",endD:"",end:"",reaction:false,reactAt:"",symptoms:[],actions:[],setLeft:"",leak:"",rbc:"",note:""}},
+  {id:"BG00010",donorNo:"99900000006",comp:"PRC",donorAbo:"A",hn:"900000008",issuedAt:"2025-09-24T09:15",labIssuer:"นางศรีสุดา ทดลองงาน",carrier:"น.ส.บัวผัน ทดลองงาน",tempOut:6,unit:"ไตเทียม",status:"ISSUED"},
+  {id:"BG00011",donorNo:"99900000014",comp:"LPRC",donorAbo:"B",hn:"900000002",issuedAt:"2025-09-24T10:02",labIssuer:"น.ส.จิราพร ทดลองงาน",carrier:"น.ส.ชูใจ ทดลองงาน",tempOut:7,unit:"LR",status:"ISSUED"},
+  {id:"BG00012",donorNo:"99900000009",comp:"FFP",donorAbo:"AB",hn:"900000010",issuedAt:"2025-09-24T10:20",labIssuer:"น.ส.กาญจนา ทดลองงาน",carrier:"น.ส.สมหญิง ทดลองงาน",tempOut:8,unit:"LR",status:"ISSUED"},
+  {id:"BG00013",donorNo:"99900000010",comp:"LPRC",donorAbo:"O",hn:"900000009",issuedAt:"2025-09-24T11:40",labIssuer:"นางศรีสุดา ทดลองงาน",carrier:"น.ส.จันทร์เพ็ญ ทดลองงาน",tempOut:6,unit:"Ward",status:"ISSUED"},
+  {id:"BG00014",donorNo:"99900000011",comp:"PRC",donorAbo:"O",hn:"900000003",issuedAt:"2025-09-24T11:55",labIssuer:"น.ส.จิราพร ทดลองงาน",carrier:"น.ส.บุญมา ทดลองงาน",tempOut:11.5,unit:"Ward",status:"ISSUED"}
+];
+
+var ROLE_PAGES = {
+  admin:["dash","issue","transfuse","return","registry","react","admin"],
+  lab:  ["dash","issue","return","registry","react"],
+  ward: ["dash","issue","transfuse","return","registry","react"],
+  lr:   ["dash","issue","transfuse","return","registry","react"],
+  hd:   ["dash","issue","transfuse","return","registry","react"]
+};
+var ROLE_ACTIONS = {
+  admin:["saveIssue","saveTransfusion","saveReturn","receiveReturn","adminWrite","addStaff","addPatient"],
+  lab:  ["saveIssue","receiveReturn","addStaff","addPatient"],
+  ward: ["saveTransfusion","saveReturn","addStaff"],
+  lr:   ["saveTransfusion","saveReturn","addStaff"],
+  hd:   ["saveTransfusion","saveReturn","addStaff"]
+};
+
+var demoToken = null, demoMv = 1;
+/* บันทึกการแก้ไขในโหมดตัวอย่าง — มีตัวอย่างไว้ให้เห็นรูปแบบตั้งแต่เปิดหน้าแรก */
+var DEMO_LOG = [
+  {ts:"2026-09-11T09:12:00", user:"admin", action:"editPatient", bagId:"", sheet:"Patients",
+   target:"900000008", changes:"หมู่เลือด (ABO): (ว่าง) → A\nRh: (ว่าง) → Rh+",
+   reason:"ผล lab ยืนยันหมู่เลือด", detail:"แก้ทะเบียนผู้ป่วย"},
+  {ts:"2026-09-12T14:40:00", user:"admin", action:"adminEdit", bagId:"BG00004", sheet:"Transfusion",
+   target:"BG00004", changes:"ปริมาตร (cc): 2300 → 230",
+   reason:"พิมพ์เกินหนึ่งหลัก", detail:"แก้บันทึกการให้เลือด"}
+];
+function demoRpc(action, p){
+  return new Promise(function(res, rej){
+    setTimeout(function(){
+      try { res(demoHandle(action, p)); } catch(e){ rej(e); }
+    }, 130);
+  });
+}
+function demoHandle(action, p){
+  if (action === "login") {
+    var u = DEMO_USERS.filter(function(x){ return x.username === String(p.username||"").toLowerCase().trim(); })[0];
+    if (!u) throw new Error("ไม่พบชื่อผู้ใช้นี้ในระบบ");
+    if (u.pin !== String(p.pin)) throw new Error("รหัสผ่านไม่ถูกต้อง — บัญชีทดลองทุกบัญชีใช้ PIN 1234");
+    demoToken = u.username;
+    return {token:u.username, user:u, mustChangePin:false};
+  }
+  var me = DEMO_USERS.filter(function(x){ return x.username === (demoToken || store("bs_token")); })[0];
+  if (!me) throw new Error("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
+  var units = (me.role==="admin"||me.role==="lab") ? null : [me.unit];
+
+  if (action === "bootstrap") {
+    var out = {
+      ver:UI_VERSION, packed:true,
+      user:me, pages:ROLE_PAGES[me.role], can:ROLE_ACTIONS[me.role], units:units,
+      mv:String(demoMv), days:Number(p.days||120),
+      bags:DEMO_BAGS.filter(function(b){ return !units || units.indexOf(b.unit)>=0; }),
+      serverTime:new Date().toISOString().slice(0,19)
+    };
+    if (String(p.mv||"") !== out.mv) out.master = {
+      patients: DEMO_PATIENTS.map(function(x){ return [x.hn,x.name,x.abo||"",x.rh||""].join("\t"); }).join("\n"),
+      staff: DEMO_STAFF.map(function(x){ return [x.name,x.unit||"",x.job||"พยาบาล"].join("\t"); }).join("\n"),
+      config: DEMO_CONFIG
+    };
+    return out;
+  }
+  if (action === "adminData") {
+    if (me.role !== "admin") throw new Error('บทบาท "'+me.role+'" ไม่มีสิทธิ์ทำรายการนี้');
+    return {
+      users: DEMO_USERS.map(function(u){
+        return {username:u.username,name:u.name,role:u.role,unit:u.unit,active:true}; }),
+      allStaff: DEMO_STAFF.map(function(x){
+        return {name:x.name,unit:x.unit,job:x.job,active:true}; }),
+      log: DEMO_LOG.slice().reverse()
+    };
+  }
+  if (action === "logPage") {
+    if (me.role !== "admin") throw new Error('บทบาท "'+me.role+'" ไม่มีสิทธิ์ทำรายการนี้');
+    return {log: DEMO_LOG.slice().reverse()};
+  }
+  function demoReason(){
+    var r = String(p.reason||"").trim();
+    if (r.length < 4) throw new Error("กรุณาระบุเหตุผลที่แก้ไข (อย่างน้อย 4 ตัวอักษร) เพื่อให้ตรวจสอบย้อนหลังได้");
+    return r;
+  }
+  function demoLog(o){
+    DEMO_LOG.push({ts:nowLocal().replace(" ","T"), user:me.username, action:o.action,
+                   bagId:o.bagId||"", detail:o.detail||"", sheet:o.sheet||"",
+                   target:o.target||"", changes:o.changes||"", reason:o.reason||""});
+  }
+  function demoDiff(oldObj, patch, labels){
+    var out = [];
+    Object.keys(patch).forEach(function(k){
+      var a = fmtDemo(oldObj ? oldObj[k] : ""), c = fmtDemo(patch[k]);
+      if (a === c) return;
+      out.push((labels[k]||k) + ": " + (a||"(ว่าง)") + " → " + (c||"(ว่าง)"));
+    });
+    return out;
+  }
+  function fmtDemo(v){
+    if (v === null || v === undefined || v === "") return "";
+    if (v === true) return "ใช่"; if (v === false) return "ไม่ใช่";
+    if (v instanceof Array) return v.join(" | ");
+    return String(v).trim();
+  }
+  if (action === "adminEditBag") {
+    if (me.role !== "admin") throw new Error('บทบาท "'+me.role+'" ไม่มีสิทธิ์ทำรายการนี้');
+    var reasonTxt = demoReason();
+    var eb = DEMO_BAGS.filter(function(x){ return x.id===p.bagId; })[0];
+    if (!eb) throw new Error("ไม่พบถุงเลือด");
+    if (p.issue && p.issue.hn && !DEMO_PATIENTS.some(function(x){ return x.hn===String(p.issue.hn).trim(); }))
+      throw new Error("ไม่พบ HN "+p.issue.hn+" ในทะเบียนผู้ป่วย — เพิ่มผู้ป่วยในทะเบียนก่อน");
+    var nChanged = 0;
+    if (p.issue) {
+      var iD = demoDiff(eb, p.issue, EDIT_LABELS.issue);
+      if (iD.length) { nChanged += iD.length;
+        Object.keys(p.issue).forEach(function(k){ if (k==="tempOut") eb[k]=Number(p.issue[k])||0; else eb[k]=p.issue[k]; });
+        demoLog({action:"adminEdit", bagId:eb.id, sheet:"BloodIssue", target:eb.id,
+                 changes:iD.join("\n"), reason:reasonTxt, detail:"แก้ข้อมูลการจ่ายเลือด"}); }
+    }
+    if (p.tx) {
+      var oldTx = eb.tx || {};
+      var flat = {volume:p.tx.volume, dx:p.tx.dx, tempIn:p.tx.tempIn, checker:p.tx.checker,
+                  giver:p.tx.giver, startD:p.tx.startDate, start:p.tx.startTime,
+                  endD:p.tx.endDate, end:p.tx.endTime, reaction:p.tx.reaction,
+                  reactAt:p.tx.reactAt, symptoms:p.tx.symptoms, actions:p.tx.actions,
+                  setLeft:p.tx.setLeft, leak:p.tx.leak, rbc:p.tx.rbc, note:p.tx.note};
+      var tD = demoDiff(eb.tx, flat, EDIT_LABELS.tx);
+      if (tD.length) { nChanged += tD.length;
+        eb.tx = eb.tx || {v1:1,v2:1,v3:1,v4:1};
+        eb.tx.v1=p.tx.v1; eb.tx.v2=p.tx.v2; eb.tx.v3=p.tx.v3; eb.tx.v4=p.tx.v4;
+        Object.keys(flat).forEach(function(k){
+          eb.tx[k] = (k==="volume"||k==="tempIn") ? (flat[k]===""?"":Number(flat[k])) : flat[k]; });
+        demoLog({action:"adminEdit", bagId:eb.id, sheet:"Transfusion", target:eb.id,
+                 changes:tD.join("\n"), reason:reasonTxt, detail:"แก้บันทึกการให้เลือด"}); }
+    }
+    if (p.ret) {
+      var flatR = {at:p.ret.returnedAt, reason:p.ret.reason, by:p.ret.returnedBy,
+                   labReceiver:p.ret.labReceiver, tempBack:p.ret.tempBack, cond:p.ret.cond, note:p.ret.note};
+      var rD = demoDiff(eb.ret, flatR, EDIT_LABELS.ret);
+      if (rD.length) { nChanged += rD.length;
+        eb.ret = eb.ret || {};
+        Object.keys(flatR).forEach(function(k){ eb.ret[k] = (k==="tempBack") ? (flatR[k]===""?"":Number(flatR[k])) : flatR[k]; });
+        demoLog({action:"adminEdit", bagId:eb.id, sheet:"BloodReturn", target:eb.id,
+                 changes:rD.join("\n"), reason:reasonTxt, detail:"แก้ข้อมูลการคืนถุง"}); }
+    }
+    if (!nChanged) throw new Error("ไม่มีช่องใดถูกเปลี่ยนแปลง — ไม่ได้บันทึกอะไร");
+    return {bagId:eb.id, changed:nChanged, bag:eb};
+  }
+  if (action === "voidBag") {
+    if (me.role !== "admin") throw new Error('บทบาท "'+me.role+'" ไม่มีสิทธิ์ทำรายการนี้');
+    var vReason = demoReason();
+    var vb = DEMO_BAGS.filter(function(x){ return x.id===p.bagId; })[0];
+    if (!vb) throw new Error("ไม่พบถุงเลือด");
+    var wasV = vb.status === "VOID";
+    if (!p.undo && wasV) throw new Error("ถุงเลือดนี้ถูกยกเลิกไปแล้ว");
+    if (p.undo && !wasV) throw new Error("ถุงเลือดนี้ไม่ได้อยู่ในสถานะยกเลิก");
+    var cur = vb.status;
+    vb.status = p.undo ? (vb.ret ? "RETURNED" : (vb.tx ? (vb.tx.end ? "DONE" : "TRANSFUSING") : "ISSUED")) : "VOID";
+    demoLog({action:p.undo?"unvoidBag":"voidBag", bagId:vb.id, sheet:"BloodIssue", target:vb.id,
+             changes:"สถานะ: "+cur+" → "+vb.status, reason:vReason,
+             detail:p.undo?"กู้คืนถุงเลือด":"ยกเลิกถุงเลือด"});
+    return {bagId:vb.id, status:vb.status, bag:vb};
+  }
+  if (action === "saveConfig") {
+    if (me.role !== "admin") throw new Error('บทบาท "'+me.role+'" ไม่มีสิทธิ์ทำรายการนี้');
+    var cReason = demoReason();
+    var list = p.value instanceof Array ? p.value : [];
+    if (!list.length) throw new Error("รายการว่างเปล่าไม่ได้ — ต้องมีอย่างน้อย 1 ตัวเลือก");
+    var dupC = {};
+    list.forEach(function(x){ if (dupC[x]) throw new Error("มีรายการซ้ำกัน: "+x); dupC[x]=1; });
+    var beforeC = (DEMO_CONFIG[p.key]||[]).join(" · ");
+    if (beforeC === list.join(" · ")) throw new Error("ไม่มีการเปลี่ยนแปลง — ไม่ได้บันทึกอะไร");
+    DEMO_CONFIG[p.key] = list;
+    demoMv++;
+    demoLog({action:"editConfig", sheet:"Config", target:p.key, reason:cReason,
+             changes:"รายการ: "+(beforeC||"(ว่าง)")+"\n→ "+list.join(" · "), detail:"แก้ค่าตั้งต้น "+p.key});
+    return {key:p.key, mv:String(demoMv)};
+  }
+  function demoBag(id){ return DEMO_BAGS.filter(function(x){ return x.id===id; })[0] || null; }
+  var EDIT_LABELS = {
+    issue:{issuedAt:"วันเวลาที่จ่ายเลือด",hn:"HN ผู้ป่วย",donorNo:"Donor No.",comp:"ชนิดส่วนประกอบ",
+      donorAbo:"หมู่เลือด Donor",tempOut:"อุณหภูมิก่อนส่ง",labIssuer:"ผู้จ่าย (Lab)",
+      carrier:"ผู้ไปรับเลือด",unit:"หน่วยงาน",status:"สถานะ"},
+    tx:{tempIn:"อุณหภูมิที่รับมา",dx:"ข้อบ่งชี้",volume:"ปริมาตร (cc)",checker:"ผู้ตรวจสอบเลือด",
+      giver:"ผู้ให้เลือด",startD:"วันที่เริ่มให้เลือด",start:"เวลาเริ่มให้เลือด",endD:"วันที่เลือดหมด",
+      end:"เวลาเลือดหมด",reaction:"เกิดปฏิกิริยา",reactAt:"เวลาที่เกิดปฏิกิริยา",symptoms:"อาการที่พบ",
+      actions:"การแก้ไข/การพยาบาล",setLeft:"transfusion set",leak:"รอยรั่ว",rbc:"ลักษณะเม็ดเลือดแดง",note:"หมายเหตุ"},
+    ret:{at:"วันเวลาที่คืน",reason:"เหตุผลที่คืน",by:"ผู้ส่งคืน",labReceiver:"Lab ผู้รับคืน",
+      tempBack:"อุณหภูมิขณะคืน",cond:"สภาพถุงเลือด",note:"หมายเหตุ"}
+  };
+  if (action === "saveIssue") {
+    if (!String(p.donorNo||"").trim()) throw new Error("กรุณากรอก Donor No.");
+    if (!DEMO_PATIENTS.some(function(x){ return x.hn===String(p.hn||"").trim(); }))
+      throw new Error("ไม่พบ HN "+p.hn+" ในทะเบียนผู้ป่วย — กดปุ่ม + เพื่อเพิ่มผู้ป่วยใหม่ก่อน");
+    if (p.tempOut === "" || p.tempOut == null) throw new Error("กรุณากรอกอุณหภูมิก่อนส่ง");
+    if (DEMO_BAGS.some(function(b){ return b.donorNo.replace(/[.\s-]/g,"") === String(p.donorNo).replace(/[.\s-]/g,"") && b.status!=="RETURNED"; }))
+      throw new Error("Donor No. นี้ถูกบันทึกไว้แล้ว");
+    var id = "BG" + ("0000" + (DEMO_BAGS.length+1)).slice(-5);
+    DEMO_BAGS.push({id:id, donorNo:p.donorNo, comp:p.comp, donorAbo:p.donorAbo, hn:p.hn,
+      issuedAt:p.issuedAt||nowLocal(), labIssuer:p.labIssuer, carrier:p.carrier,
+      tempOut:Number(p.tempOut), unit:p.unit, status:"ISSUED"});
+    return {bagId:id, bag:demoBag(id)};
+  }
+  if (action === "saveTransfusion") {
+    var b = DEMO_BAGS.filter(function(x){ return x.id===p.bagId; })[0];
+    if (!b) throw new Error("ไม่พบถุงเลือด");
+    if (p.close && !(p.v1&&p.v2&&p.v3&&p.v4)) throw new Error("ต้องตรวจสอบครบทั้ง 4 ข้อ ก่อนปิดถุงเลือด");
+    if (p.close && !p.end) throw new Error("กรุณากรอกเวลาเลือดหมดก่อนปิดถุง");
+    if (p.reaction && !p.reactAt) throw new Error("กรุณากรอกเวลาที่เกิดปฏิกิริยา");
+    b.tx = {v1:p.v1,v2:p.v2,v3:p.v3,v4:p.v4,tempIn:p.tempIn,dx:p.dx,volume:Number(p.volume)||0,
+      checker:p.checker,giver:p.giver,start:p.start,end:p.end,reaction:!!p.reaction,reactAt:p.reactAt,
+      symptoms:p.symptoms||[],actions:p.actions||[],setLeft:p.setLeft,leak:p.leak,rbc:p.rbc,note:p.note};
+    b.status = p.close ? "DONE" : "TRANSFUSING";
+    return {bagId:b.id, status:b.status, bag:b};
+  }
+  if (action === "saveReturn") {
+    var r = DEMO_BAGS.filter(function(x){ return x.id===p.bagId; })[0];
+    if (!r) throw new Error("ไม่พบถุงเลือด");
+    if (p.tempBack === "" || p.tempBack == null) throw new Error("กรุณากรอกอุณหภูมิขณะคืน");
+    r.ret = {at:p.at||nowLocal(), reason:p.reason, by:p.by, labReceiver:p.labReceiver,
+             tempBack:Number(p.tempBack), cond:p.cond, note:p.note};
+    r.status = "RETURNED";
+    return {bagId:r.id, bag:r};
+  }
+  if (action === "savePatient") {
+    var hn = String(p.hn||"").trim(), nm2 = String(p.name||"").trim();
+    if (!hn) throw new Error("กรุณากรอก HN");
+    if (!nm2) throw new Error("กรุณากรอกชื่อ-สกุลผู้ป่วย");
+    var oldHn = String(p.oldHn||hn).trim();
+    var pi = -1;
+    for (var k=0;k<DEMO_PATIENTS.length;k++){ if(DEMO_PATIENTS[k].hn===oldHn){ pi=k; break; } }
+    if (pi<0 && DEMO_PATIENTS.some(function(x){ return x.hn===hn; }))
+      throw new Error("HN "+hn+" มีอยู่ในทะเบียนแล้ว");
+    var prow = {hn:hn, name:nm2, abo:String(p.abo||""), rh:String(p.rh||"")};
+    if (pi<0) DEMO_PATIENTS.push(prow); else DEMO_PATIENTS[pi]=prow;
+    return {hn:hn, name:nm2, isNew:pi<0, oldHn:oldHn, mv:String(++demoMv), row:prow};
+  }
+  if (action === "saveStaff") {
+    var nm = String(p.name||"").trim();
+    if (!nm) throw new Error("กรุณากรอกชื่อ-สกุล");
+    var oldNm = String(p.oldName||nm).trim();
+    var idx = -1;
+    for (var i=0;i<DEMO_STAFF.length;i++){ if(DEMO_STAFF[i].name===oldNm){ idx=i; break; } }
+    if (idx<0 && DEMO_STAFF.some(function(x){ return normName(x.name)===normName(nm); }))
+      throw new Error('มีชื่อ "'+nm+'" ในระบบอยู่แล้ว');
+    if (idx<0 && units && units.indexOf(String(p.unit))<0)
+      throw new Error("เพิ่มรายชื่อได้เฉพาะหน่วยงาน "+units[0]);
+    var row = {unit:p.unit||"", name:nm, job:p.job||"พยาบาล", active:p.active!==false};
+    if (idx<0) DEMO_STAFF.push(row); else DEMO_STAFF[idx]=row;
+    return {name:nm, isNew:idx<0, oldName:oldNm, mv:String(++demoMv), row:row};
+  }
+  if (action === "changePin") return {changed:true};
+  if (action === "exportCsv") return {csv: buildCsvLocal()};
+  throw new Error("ตัวอย่างนี้ยังไม่รองรับคำสั่ง " + action);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   2. ตัวช่วยทั่วไป
+   ═══════════════════════════════════════════════════════════ */
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function pad2(x){ return ("0"+x).slice(-2); }
+function nowLocal(){ var d=new Date();
+  return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())+"T"+pad2(d.getHours())+":"+pad2(d.getMinutes()); }
+function fmtDate(iso){ if(!iso) return "—"; var d=String(iso).slice(0,10).split("-");
+  return d.length<3 ? "—" : d[2]+"/"+d[1]+"/"+(Number(d[0])+543); }
+function fmtDT(iso){ return iso ? fmtDate(iso)+" "+String(iso).slice(11,16) : "—"; }
+function todayIso(){ var d=new Date();
+  return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function p2(n){ return (n<10?"0":"")+n; }
+function addDays(iso, n){
+  var a=String(iso).split("-");
+  var d=new Date(Number(a[0]), Number(a[1])-1, Number(a[2])+Number(n));
+  return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
+}
+/** "22/08/2569 09:00 – 12:00" หรือ "…09:00 – 23/08/2569 02:00" เมื่อให้ข้ามคืน */
+function fmtSpan(t){
+  t = t || {};
+  if (!t.start && !t.end) return "—";
+  var a = (t.startD ? fmtDate(t.startD)+" " : "") + (t.start || "—");
+  if (!t.end) return a + " – ยังไม่ปิดถุง";
+  var crossed = t.endD && t.startD && t.endD !== t.startD;
+  return a + " – " + (crossed ? fmtDate(t.endD)+" " : "") + t.end;
+}
+function initials(n){ return (String(n||"?").replace(/^(นาย|นาง|น\.ส\.|นางสาว|นพ\.|พญ\.)/,"").trim().charAt(0)) || "?"; }
+function opt(list, sel){ return (list||[]).map(function(x){
+  return '<option'+(String(x)===String(sel)?' selected':'')+'>'+esc(x)+'</option>'; }).join(""); }
+
+/**
+ * เหมือน opt() แต่ถ้าค่าที่บันทึกไว้ไม่มีในรายการ จะใส่ไว้เป็นตัวเลือกแรกให้ด้วย
+ * สำคัญตอนแก้ข้อมูลเก่า — ไม่งั้นกดบันทึกแล้วค่าเดิมจะถูกเปลี่ยนโดยไม่ตั้งใจ
+ */
+function optKeep(list, sel){
+  var a = (list||[]).slice();
+  var v = String(sel==null?"":sel);
+  if (v && a.map(String).indexOf(v) < 0) a.unshift(v);
+  if (!v) a.unshift("");
+  return a.map(function(x){
+    return '<option value="'+esc(x)+'"'+(String(x)===v?' selected':'')+'>'+
+           (String(x)===""?"— ไม่ระบุ —":esc(x))+'</option>'; }).join("");
+}
+
+/** ช่องกรอกเหตุผล — ต้องมีทุกครั้งที่แก้ข้อมูลย้อนหลัง */
+function reasonField(id, hintText){
+  return '<div class="reasonbox" style="margin-top:15px"><div class="field" style="margin:0">' +
+    '<label for="'+id+'">เหตุผลที่แก้ไข</label>' +
+    '<input id="'+id+'" maxlength="300" placeholder="'+esc(hintText||"เช่น ผล lab ยืนยันหมู่เลือด")+'">' +
+    '<span class="hint">บันทึกไว้ในประวัติการแก้ไข พร้อมค่าเดิมและค่าใหม่ของทุกช่องที่เปลี่ยน</span>' +
+    '</div></div>';
+}
+
+var STATUS = {
+  ISSUED:      {label:"จ่ายจาก Lab แล้ว", cls:"p-issued"},
+  TRANSFUSING: {label:"กำลังให้เลือด",     cls:"p-transfusing"},
+  DONE:        {label:"ให้เลือดครบ",        cls:"p-done"},
+  RETURNED:    {label:"คืนถุงเลือด",        cls:"p-returned"},
+  VOID:        {label:"ยกเลิกแล้ว",         cls:"p-void"}
+};
+
+/** ถุงที่ถูกยกเลิก ไม่นับในสถิติและไม่ขึ้นเป็นงานค้าง แต่ยังค้นเจอในทะเบียน */
+function notVoid(b){ return b.status !== "VOID"; }
+function liveBags(){ return bags().filter(notVoid); }
+function liveScoped(){ return scopedBags().filter(notVoid); }
+var RBC_COMPAT = {O:["O","A","B","AB"], A:["A","AB"], B:["B","AB"], AB:["AB"]};
+
+var ICON = {
+  drop:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5s6.5 7.2 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 9.7 12 2.5 12 2.5z"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg>',
+  inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M4.5 5h15l1.5 8v6h-18v-6z"/></svg>',
+  needle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3 12 10"/><path d="M15 5l4 4"/><path d="M12 10 5 17l-2 4 4-2 7-7"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 4 10l5 5"/><path d="M4 10h10a6 6 0 0 1 0 12h-3"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/></svg>',
+  out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4"/><path d="M11 8l-4 4 4 4"/><path d="M7 12h10"/></svg>',
+  more:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>',
+  key:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v4M15 12v3"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 11l5 5 5-5M4 21h16"/></svg>'
+};
+
+/* ═══════════════════════════════════════════════════════════
+   3. สถานะแอป
+   ═══════════════════════════════════════════════════════════ */
+var S = {
+  booting:true, user:null, D:null, admin:null,
+  page:"dash", filter:{}, modal:null, editBag:null,
+  busy:false, loginErr:"", loginUser:"", limit:40, issueUnit:"",
+  mv:"", days:120, lastSync:0, syncing:false, allLoaded:false,
+  fy:0, allFy:false, fyStart:"", fyEnd:"", currentFy:0, fyList:[]
+};
+
+/* ── ปีงบประมาณไทย 1 ต.ค. – 30 ก.ย. ── */
+var THMON = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+/** ลำดับเดือนในปีงบประมาณ: ต.ค.(10) → ก.ย.(9) */
+var FY_MONTHS = [10,11,12,1,2,3,4,5,6,7,8,9];
+
+function fyLabel(fy){ return "ปีงบประมาณ " + fy; }
+function fyRangeText(){
+  if (S.allFy) return "ทุกปีงบประมาณ";
+  if (!S.fyStart) return "";
+  var a = S.fyStart.split("-"), b = S.fyEnd.split("-");
+  return "1 ต.ค. " + (Number(a[0])+543) + " – 30 ก.ย. " + (Number(b[0])+543);
+}
+/** ถุงเลือดใบนี้อยู่ในช่วงที่กำลังดูอยู่หรือไม่ (ใช้กับตัวเลขสถิติเท่านั้น) */
+function inScope(b){
+  if (S.allFy || !S.fyStart) return true;
+  var d = String(b.issuedAt || "").slice(0,10);
+  return d >= S.fyStart && d <= S.fyEnd;
+}
+/** ถุงเลือดสำหรับคิดสถิติ — ตัดถุงค้างจากปีอื่นที่พ่วงมาออก */
+function scopedBags(){ return bags().filter(inScope); }
+
+/* ── แคชในเครื่อง: เปิดแอปแล้วเห็นข้อมูลทันที ไม่ต้องรอเซิร์ฟเวอร์ ── */
+var CACHE_KEY = "bs_cache_v1";
+function saveCache(){
+  if (!S.D) return;
+  try {
+    store(CACHE_KEY, JSON.stringify({
+      user:S.D.user, pages:S.D.pages, can:S.D.can, units:S.D.units,
+      mv:S.mv, days:S.days, master:S.rawMaster, bags:S.D.bags, ts:Date.now(),
+      fy:S.fy, allFy:S.allFy, fyStart:S.fyStart, fyEnd:S.fyEnd,
+      currentFy:S.currentFy, fyList:S.fyList
+    }));
+  } catch(e){ /* พื้นที่เต็มหรือเบราว์เซอร์ปิดกั้น — ไม่เป็นไร ใช้โหลดปกติแทน */ }
+}
+function loadCache(){
+  try { var raw = store(CACHE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
+}
+function clearCache(){ try { store(CACHE_KEY, null); } catch(e){} }
+
+/**
+ * คลี่ถุงเลือดจากอาร์เรย์ตามตำแหน่งที่เซิร์ฟเวอร์ส่งมา
+ * ลำดับต้องตรงกับ packBag_() ใน Code.gs
+ */
+function unpackBag(a){
+  var b = {id:a[0], issuedAt:a[1], hn:a[2], donorNo:a[3], comp:a[4], donorAbo:a[5], tempOut:a[6],
+           labIssuer:a[7], carrier:a[8], unit:a[9], status:a[10]};
+  var t = a[11];
+  if (t) b.tx = {v1:!!t[0], v2:!!t[1], v3:!!t[2], v4:!!t[3], tempIn:t[4], dx:t[5], volume:t[6],
+                 checker:t[7], giver:t[8], start:t[9], end:t[10], reaction:!!t[11], reactAt:t[12],
+                 symptoms:t[13]||[], actions:t[14]||[], setLeft:t[15], leak:t[16], rbc:t[17], note:t[18],
+                 startD:t[19]||"", endD:t[20]||""};
+  var q = a[12];
+  if (q) b.ret = {at:q[0], reason:q[1], by:q[2], labReceiver:q[3], tempBack:q[4], cond:q[5], note:q[6]};
+  return b;
+}
+function normBag(x){
+  if (x instanceof Array) return unpackBag(x);
+  if (looksLikeArray(x)) return unpackBag(fixArrays(x));
+  return x;
+}
+function normBags(list){
+  var arr = (list instanceof Array) ? list : (looksLikeArray(list) ? fixArrays(list) : []);
+  return arr.map(normBag);
+}
+
+/** แปลงข้อมูลหลักจากข้อความคั่น tab กลับเป็นรายการ */
+function parseMaster(m){
+  return {
+    patients: String(m.patients||"").split("\n").filter(Boolean).map(function(l){
+      var a = l.split("\t"); return {hn:a[0], name:a[1]||"", abo:a[2]||"", rh:a[3]||""}; }),
+    staff: String(m.staff||"").split("\n").filter(Boolean).map(function(l){
+      var a = l.split("\t"); return {name:a[0], unit:a[1]||"", job:a[2]||"พยาบาล"}; }),
+    config: m.config || {}
+  };
+}
+/** เขียนผลลัพธ์จากเซิร์ฟเวอร์ลงสถานะแอป */
+function applyBoot(d){
+  // ถ้า Code.gs กับ Index.html เป็นคนละรุ่น ต้องบอกให้เห็นทันที ไม่ใช่แสดงข้อมูลผิด ๆ
+  // ไม่มีเลข ver มาด้วย = Code.gs เป็นรุ่นก่อน 2.0 ก็ถือว่าไม่ตรงกันเหมือนกัน
+  S.serverVer = d.ver || "ก่อน 2.0";
+  S.verBad = String(d.ver || "") !== UI_VERSION;
+  var keep = S.D || {};
+  S.D = {
+    user:d.user, pages:d.pages, can:d.can, units:d.units,
+    patients: keep.patients || [], staff: keep.staff || [], config: keep.config || {},
+    bags: normBags(d.bags)
+  };
+  if (d.master) {
+    S.rawMaster = d.master;
+    var m = parseMaster(d.master);
+    S.D.patients = m.patients; S.D.staff = m.staff; S.D.config = m.config;
+  } else if (d.patients instanceof Array) {
+    // Code.gs รุ่นเก่าส่งข้อมูลหลักมาแบบเดิมทุกครั้ง — รับไว้ให้ใช้งานได้เหมือนกัน
+    S.D.patients = d.patients;
+    S.D.staff = d.staff || [];
+    S.D.config = d.config || {};
+    S.rawMaster = {
+      patients: S.D.patients.map(function(x){ return [x.hn,x.name,x.abo||"",x.rh||""].join("\t"); }).join("\n"),
+      staff: S.D.staff.map(function(x){ return [x.name,x.unit||"",x.job||"พยาบาล"].join("\t"); }).join("\n"),
+      config: S.D.config
+    };
+    if (d.users) S.admin = {users:d.users, allStaff:d.allStaff || []};
+  }
+  S.mv = d.mv || S.mv;
+  if (d.days) S.days = d.days;
+  if (d.fy) { S.fy = d.fy; S.fyStart = d.fyStart || ""; S.fyEnd = d.fyEnd || ""; }
+  S.allFy = !!d.allFy;
+  if (d.currentFy) S.currentFy = d.currentFy;
+  if (d.fyList && d.fyList.length) S.fyList = d.fyList;
+  S.user = d.user;
+  S.lastSync = Date.now();
+  if (d.mustChangePin) S.modal = {type:"pin"};   // ยังใช้รหัสเริ่มต้น — ต้องเปลี่ยนก่อนจึงจะเห็นข้อมูล
+  saveCache();
+}
+/** เขียนแคชกลับเข้าสถานะแอป (ตอนเปิดแอปครั้งถัดไป) */
+function applyCache(c){
+  var m = parseMaster(c.master || {});
+  S.D = {user:c.user, pages:c.pages, can:c.can, units:c.units,
+         patients:m.patients, staff:m.staff, config:m.config, bags:normBags(c.bags)};
+  S.rawMaster = c.master; S.mv = c.mv; S.days = c.days || 120;
+  S.fy = c.fy || 0; S.allFy = !!c.allFy; S.fyStart = c.fyStart || ""; S.fyEnd = c.fyEnd || "";
+  S.currentFy = c.currentFy || 0; S.fyList = c.fyList || [];
+  S.user = c.user; S.lastSync = c.ts || 0;
+}
+/** อัปเดตถุงเลือดใบเดียวหลังบันทึก — แทนการโหลดข้อมูลใหม่ทั้งชุด */
+function patchBag(raw){
+  var bag = raw ? normBag(raw) : null;
+  if (!bag || !S.D) return;
+  if (S.D.units && S.D.units.indexOf(bag.unit) < 0) return;
+  var list = S.D.bags, i;
+  for (i = 0; i < list.length; i++) if (list[i].id === bag.id) { list[i] = bag; saveCache(); return; }
+  list.push(bag);
+  saveCache();
+}
+function patchMaster(kind, row, oldKey, mv){
+  if (!row) return;
+  var list = kind === "patient" ? S.D.patients : S.D.staff;
+  var key  = kind === "patient" ? "hn" : "name";
+  var hit = -1, i;
+  for (i = 0; i < list.length; i++) if (String(list[i][key]) === String(oldKey || row[key])) { hit = i; break; }
+  if (kind === "staff" && row.active === false) { if (hit >= 0) list.splice(hit,1); }
+  else if (hit >= 0) list[hit] = row;
+  else list.push(row);
+  if (mv) S.mv = mv;
+  // เก็บรูปแบบข้อความไว้ให้ตรงกัน เพื่อให้แคชในเครื่องยังใช้ได้
+  S.rawMaster = S.rawMaster || {};
+  S.rawMaster.patients = S.D.patients.map(function(x){ return [x.hn,x.name,x.abo||"",x.rh||""].join("\t"); }).join("\n");
+  S.rawMaster.staff = S.D.staff.map(function(x){ return [x.name,x.unit||"",x.job||"พยาบาล"].join("\t"); }).join("\n");
+  S.rawMaster.config = S.D.config;
+  if (S.admin) S.admin = null;   // หน้าตั้งค่าระบบจะโหลดใหม่เมื่อเปิดครั้งหน้า
+  saveCache();
+}
+
+function toast(msg, bad){
+  var el = document.getElementById("tst");
+  if (!el) return;
+  el.className = "toast" + (bad ? " bad" : "");
+  el.innerHTML = (bad ? ICON.alert : ICON.drop) + '<span>' + esc(msg) + '</span>';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ el.classList.add("hide"); }, bad ? 4200 : 2600);
+}
+
+function P(){ return (S.D && S.D.patients) || []; }
+function pt(hn){
+  var f = P().filter(function(x){ return String(x.hn)===String(hn); })[0];
+  return f || {hn:hn, name:"(ไม่พบในทะเบียนผู้ป่วย)", abo:"?", rh:"", missing:true};
+}
+function bags(){ return (S.D && S.D.bags) || []; }
+function cfg(k){
+  var v = (S.D && S.D.config) ? S.D.config[k] : null;
+  if (v instanceof Array) return v;
+  if (looksLikeArray(v)) return fixArrays(v);
+  return [];
+}
+function can(a){ return ((S.D && S.D.can) || []).indexOf(a) >= 0; }
+function hasPage(p){ return ((S.D && S.D.pages) || []).indexOf(p) >= 0; }
+function normName(n){
+  return String(n==null?"":n).replace(/^(นางสาว|น\.ส\.|นาง|นาย|นพ\.|พญ\.)\s*/,"").replace(/\s+/g,"");
+}
+/** รายชื่อเจ้าหน้าที่ตามหน่วยงานและประเภทงาน — คนที่ยังไม่ระบุหน่วยงานจะขึ้นให้ทุกหน่วยงาน */
+function staffOf(unit, job){
+  var all = (S.D && S.D.staff) || [];
+  return all.filter(function(s){
+    var u = String(s.unit||"");
+    var okUnit = !unit || !u || u===String(unit);
+    var okJob  = !job || String(s.job||"พยาบาล")===job;
+    return okUnit && okJob;
+  }).map(function(s){ return s.name; });
+}
+var JOBS = ["พยาบาล","ผู้ช่วยพยาบาล","เจ้าหน้าที่ห้องปฏิบัติการ","อื่น ๆ"];
+/** ดึง HN จากข้อความที่พิมพ์ในช่องค้นหา — รับได้ทั้ง "900000001" และ "900000001 — นางสมใจ ใจดี" */
+function hnOf(text){
+  var v = String(text||"").trim();
+  if (!v) return "";
+  var head = v.split("—")[0].trim();
+  if (P().some(function(x){ return String(x.hn)===head; })) return head;
+  var byName = P().filter(function(x){ return x.name===v || (x.hn+" — "+x.name)===v; })[0];
+  return byName ? String(byName.hn) : head;
+}
+function jobCls(j){
+  return j==="ผู้ช่วยพยาบาล" ? "j-na" : j==="เจ้าหน้าที่ห้องปฏิบัติการ" ? "j-lab" : j==="อื่น ๆ" ? "j-other" : "";
+}
+/** ช่องเลือกรายชื่อ + ปุ่มเพิ่มชื่อใหม่ */
+function staffOptions(unit, jobs, sel){
+  var groups = jobs.map(function(j){
+    var names = staffOf(unit, j);
+    return names.length ? '<optgroup label="'+esc(j)+'">'+opt(names, sel)+'</optgroup>' : '';
+  }).join("");
+  return groups || '<option value="">— ยังไม่มีรายชื่อ กดปุ่ม + เพื่อเพิ่ม —</option>';
+}
+function pickStaff(id, unit, jobs, sel, addJob){
+  return '<div class="withadd"><select id="'+id+'">'+staffOptions(unit, jobs, sel)+'</select>' +
+    (can("addStaff") ? '<button class="icon-btn" data-act="addStaff" data-target="'+id+'"' +
+      ' data-unit="'+esc(unit||"")+'" data-jobs="'+esc(jobs.join("|"))+'"' +
+      ' data-job="'+esc(addJob||jobs[0])+'"' +
+      ' title="เพิ่มรายชื่อใหม่" aria-label="เพิ่มรายชื่อใหม่">+</button>' : '') + '</div>';
+}
+/** เก็บ/คืนค่าที่กรอกไว้ในฟอร์ม เพื่อไม่ให้หายเวลาหน้าจอวาดใหม่ */
+function snapForm(){
+  var o = {v:{}, boxes:[]};
+  [].slice.call(document.querySelectorAll(".content input[id], .content select[id], .content textarea[id]"))
+    .forEach(function(el){ if (el.type!=="checkbox" && el.type!=="radio") o.v[el.id] = el.value; });
+  [].slice.call(document.querySelectorAll('.content input[type="checkbox"], .content input[type="radio"]'))
+    .forEach(function(el){ o.boxes.push(el.checked); });
+  return o;
+}
+function restoreForm(o){
+  if (!o) return;
+  Object.keys(o.v).forEach(function(k){
+    var el = document.getElementById(k); if (!el) return;
+    if (el.tagName!=="SELECT" || [].some.call(el.options, function(x){ return x.value===o.v[k]; })) el.value = o.v[k];
+  });
+  var boxes = [].slice.call(document.querySelectorAll('.content input[type="checkbox"], .content input[type="radio"]'));
+  if (boxes.length === o.boxes.length) boxes.forEach(function(el,i){ el.checked = o.boxes[i]; });
+  syncFormUi();
+}
+/** ปรับสีช่องติ๊กและซ่อน/แสดงกล่องปฏิกิริยาให้ตรงกับค่าที่กรอกอยู่ */
+function syncFormUi(){
+  [].slice.call(document.querySelectorAll(".v-check")).forEach(function(c){
+    var w = c.closest(".chk"); if (w) w.classList.toggle("done", c.checked);
+  });
+  syncTxDates();
+  var r = document.querySelector('input[name="react"]:checked');
+  if (r) {
+    var box = document.getElementById("reactBox");
+    if (box) box.classList.toggle("hide", r.value!=="1");
+    [].slice.call(document.querySelectorAll('input[name="react"]')).forEach(function(x){
+      var lab = x.closest(".radio"); if (!lab) return;
+      lab.classList.remove("on","on-crit");
+      if (x.checked) lab.classList.add(x.value==="1" ? "on-crit" : "on");
+    });
+  }
+}
+/**
+ * เติมวันที่ให้อัตโนมัติ พยาบาลกรอกแค่เวลาก็พอในกรณีปกติ
+ *  • พอกรอกเวลาเลือดหมด ระบบเติมวันที่หมดให้เป็นวันเดียวกับที่เริ่ม
+ *  • ถ้าเวลาเลือดหมดน้อยกว่าเวลาเริ่ม แปลว่าให้ข้ามเที่ยงคืน จึงเลื่อนเป็นวันถัดไป
+ * ทุกช่องยังแก้เองได้ ระบบไม่ทับค่าที่พยาบาลตั้งใจแก้
+ */
+function syncTxDates(){
+  var sd = document.getElementById("t-startd"), st = document.getElementById("t-start");
+  var ed = document.getElementById("t-endd"),   et = document.getElementById("t-end");
+  if (!sd || !ed) return;
+  if (st && st.value && !sd.value) sd.value = todayIso();
+  if (et && et.value) {
+    if (!ed.value) ed.value = (sd.value && st && st.value && et.value < st.value)
+      ? addDays(sd.value, 1) : (sd.value || todayIso());
+  } else if (!ed.dataset.touched) { ed.value = ""; }
+
+  // ช่องวันที่ของเบราว์เซอร์แสดงเป็น ค.ศ. จึงทวนเป็น พ.ศ. ให้อ่านยืนยันอีกชั้น
+  var sh = document.getElementById("t-starthint");
+  if (sh) sh.textContent = sd.value ? "วันที่ " + fmtDate(sd.value) : "";
+
+  var hint = document.getElementById("t-endhint");
+  if (!hint) return;
+  var crossed = sd.value && ed.value && ed.value !== sd.value;
+  var bad = sd.value && ed.value && et && et.value && st && st.value &&
+            (ed.value < sd.value || (ed.value === sd.value && et.value < st.value));
+  hint.className = "hint" + (bad ? " hint-bad" : (crossed ? " hint-note" : ""));
+  hint.textContent = bad ? "เวลาเลือดหมดอยู่ก่อนเวลาเริ่มให้ — ถ้าให้ข้ามคืน แก้วันที่เลือดหมดเป็นวันถัดไป"
+    : crossed ? "ให้ข้ามคืน — เลือดหมดวันที่ " + fmtDate(ed.value)
+    : ed.value ? "วันที่ " + fmtDate(ed.value)
+    : "เว้นว่างไว้หากยังให้ไม่เสร็จ";
+}
+
+function openModal(m){ m.form = snapForm(); S.modal = m; paint(); restoreForm(m.form); }
+function closeModal(){ var f = S.modal && S.modal.form; S.modal = null; paint(); restoreForm(f); }
+function isRedCell(c){ return ["PRC","LPRC","Whole blood"].indexOf(c) >= 0; }
+function aboCheck(b){
+  var p = pt(b.hn);
+  if (!isRedCell(b.comp) || !b.donorAbo || !p.abo || p.abo==="?") return null;
+  return (RBC_COMPAT[b.donorAbo]||[]).indexOf(p.abo) >= 0 ? null
+    : "หมู่เลือด Donor " + b.donorAbo + " ให้ผู้ป่วยหมู่ " + p.abo + " ไม่ได้";
+}
+function tempFlag(t){
+  var lim = Number((S.D && S.D.config && S.D.config.tempLimit) || 10);
+  return (t==="" || t==null) ? null : (Number(t) > lim ? "อุณหภูมิ " + t + "°C เกิน " + lim + "°C" : null);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. หน้าเข้าสู่ระบบ
+   ═══════════════════════════════════════════════════════════ */
+function viewLogin(){
+  return '' +
+  '<div class="login-wrap"><div class="login-card">' +
+    '<div class="login-side">' +
+      '<div class="brand"><div class="brand-mark">'+ICON.drop+'</div>' +
+      '<div><div class="brand-name">BloodSafe</div><div class="brand-sub">' +
+        esc((S.D&&S.D.config&&S.D.config.hospital) || "โรงพยาบาลร้องกวาง จ.แพร่") + '</div></div></div>' +
+      '<h1>ระบบบันทึกและเฝ้าระวัง<br>การให้เลือดผู้ป่วย</h1>' +
+      '<p>ติดตามถุงเลือดตั้งแต่จ่ายจากห้อง Lab จนถึงเลือดหมดถุง พร้อมบันทึกปฏิกิริยาจากการให้เลือดในระบบเดียว</p>' +
+      '<ul class="flowchain">' +
+        '<li><span class="n">1</span><span class="t"><b>Lab จ่ายเลือด</b>บันทึก Donor No. หมู่เลือด และอุณหภูมิก่อนส่ง</span></li>' +
+        '<li><span class="n">2</span><span class="t"><b>หน่วยงานรับเลือด</b>ตรวจสอบชื่อ–HN–หมู่เลือด ก่อนเริ่มให้</span></li>' +
+        '<li><span class="n">3</span><span class="t"><b>ให้เลือด &amp; เฝ้าระวัง</b>บันทึกเวลา ปริมาตร และอาการผิดปกติ</span></li>' +
+        '<li><span class="n">4</span><span class="t"><b>ปิดถุง หรือ คืน Lab</b>สรุปผลและส่งคืนถุงที่ไม่ได้ใช้</span></li>' +
+      '</ul>' +
+    '</div>' +
+    '<div class="login-main">' +
+      '<h2>เข้าสู่ระบบ</h2>' +
+      '<div class="field"><label for="lu">ชื่อผู้ใช้</label>' +
+        '<input id="lu" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="เช่น ward01" value="'+esc(S.loginUser)+'"></div>' +
+      '<div class="field"><label for="lp">รหัสผ่าน (PIN)</label>' +
+        '<input id="lp" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••"></div>' +
+      '<div class="err">'+esc(S.loginErr)+'</div>' +
+      '<button class="btn block" data-act="login">เข้าสู่ระบบ</button>' +
+      '<div style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:10px">BloodSafe v'+esc(UI_VERSION)+'</div>' +
+      (LIVE ? '' :
+      '<div class="demo-accounts"><h3>บัญชีทดลอง — แตะเพื่อกรอกอัตโนมัติ (PIN 1234)</h3>' +
+        DEMO_USERS.map(function(u){ return '<button class="acct" data-act="fill" data-u="'+esc(u.username)+'">' +
+          '<span class="avatar">'+esc(initials(u.name))+'</span>' +
+          '<span style="min-width:0"><span class="u">'+esc(u.username)+'</span><br>' +
+          '<span style="font-size:12px;color:var(--muted)">'+esc(u.name)+'</span></span>' +
+          '<span class="r">'+esc(roleLabel(u.role))+'</span></button>'; }).join("") +
+      '</div>') +
+    '</div>' +
+  '</div></div>';
+}
+
+function roleLabel(r){
+  return {admin:"ผู้ดูแลระบบ", lab:"ห้องปฏิบัติการ (Lab)", ward:"ตึกผู้ป่วยใน (Ward)",
+          lr:"ห้องคลอด (LR)", hd:"หน่วยไตเทียม"}[r] || r;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. โครงหน้าจอ
+   ═══════════════════════════════════════════════════════════ */
+var PAGE_META = {
+  dash:      {t:"ภาพรวม",              s:"สรุปสถานะถุงเลือดและการเฝ้าระวัง",           i:"home",   short:"ภาพรวม"},
+  issue:     {t:"รับเลือดจากห้อง Lab",  s:"ขั้นที่ 1 — บันทึกการจ่ายและรับถุงเลือด",    i:"inbox",  short:"รับเลือด"},
+  transfuse: {t:"บันทึกการให้เลือด",     s:"ขั้นที่ 2–3 — ตรวจสอบก่อนให้ และเฝ้าระวังอาการ", i:"needle", short:"ให้เลือด"},
+  return:    {t:"คืนถุงเลือด",          s:"ขั้นที่ 4 — ส่งคืนถุงที่ไม่ได้ใช้ให้ห้อง Lab",  i:"back",   short:"คืนถุง"},
+  registry:  {t:"ทะเบียนการให้เลือด",    s:"ค้นหา กรอง และส่งออกข้อมูล",                i:"list",   short:"ทะเบียน"},
+  react:     {t:"ทะเบียนปฏิกิริยา",      s:"รายการที่เกิดอาการผิดปกติจากการให้เลือด",     i:"alert",  short:"ปฏิกิริยา"},
+  admin:     {t:"ตั้งค่าระบบ",           s:"ผู้ใช้งาน เจ้าหน้าที่ และค่าตั้งต้น",          i:"gear",   short:"ตั้งค่า"},
+  diag:      {t:"ตรวจสอบระบบ",          s:"สถานะการเชื่อมต่อและข้อมูลที่ได้รับ",          i:"alert",  short:"ตรวจสอบ"}
+};
+/* ลำดับความสำคัญของแท็บล่างในแต่ละบทบาท */
+var TAB_ORDER = {
+  admin: ["dash","issue","transfuse","registry"],
+  lab:   ["dash","issue","return","registry"],
+  ward:  ["dash","transfuse","issue","registry"],
+  lr:    ["dash","transfuse","issue","registry"],
+  hd:    ["dash","transfuse","issue","registry"]
+};
+
+function counts(){
+  var b = bags();
+  return {
+    issued: b.filter(function(x){ return x.status==="ISSUED"; }).length,
+    running: b.filter(function(x){ return x.status==="TRANSFUSING"; }).length
+  };
+}
+
+function viewApp(){
+  var c = counts(), m = PAGE_META[S.page] || PAGE_META.dash;
+  var pages = (S.D.pages||[]).slice();
+  if (pages.indexOf("diag") < 0) pages.push("diag");
+  var tabs = (TAB_ORDER[S.D.user.role]||[]).filter(function(p){ return pages.indexOf(p)>=0; }).slice(0,4);
+
+  function badgeFor(p){ return p==="issue" ? c.issued : (p==="transfuse" ? c.running : 0); }
+  function navBtn(p){
+    var mm = PAGE_META[p], b = badgeFor(p);
+    return '<button class="nav '+(S.page===p?"on":"")+'" data-act="go" data-p="'+p+'">' +
+      ICON[mm.i]+'<span>'+esc(mm.t)+'</span>'+(b?'<span class="badge">'+b+'</span>':'')+'</button>';
+  }
+  function tabBtn(p){
+    var mm = PAGE_META[p], b = badgeFor(p);
+    return '<button class="tab '+(S.page===p?"on":"")+'" data-act="go" data-p="'+p+'">' +
+      ICON[mm.i]+(b?'<span class="dot">'+b+'</span>':'')+'<span>'+esc(mm.short)+'</span></button>';
+  }
+
+  return '' +
+  (S.verBad ? '<div class="verbar">' + ICON.alert +
+    '<span><b>ไฟล์ Code.gs กับ Index.html คนละรุ่น</b> — Code.gs รุ่น ' + esc(S.serverVer) +
+    ' แต่หน้าเว็บรุ่น ' + UI_VERSION + ' · ข้อมูลบางส่วนอาจแสดงไม่ครบ ' +
+    'ให้วางไฟล์ทั้งสองใหม่ใน Apps Script แล้วสั่ง Deploy เวอร์ชันใหม่</span></div>' : '') +
+  (LIVE ? '' : '<div class="demo-bar"><b>โหมดตัวอย่าง</b> — ข้อมูลจำลอง<span class="wide-only"> บันทึกไว้ชั่วคราวในเบราว์เซอร์</span> ยังไม่เชื่อมต่อ Google Sheet</div>') +
+  '<div class="app">' +
+    '<aside class="rail">' +
+      '<div class="rail-head"><div class="brand-mark">'+ICON.drop+'</div>' +
+        '<div><div class="brand-name" style="font-size:16px">BloodSafe</div>' +
+        '<div class="brand-sub">'+esc(S.D.user.unit==="—"?"ผู้ดูแลระบบ":S.D.user.unit)+'</div></div></div>' +
+      '<div class="rail-group">งานประจำวัน</div>' +
+      ["dash","issue","transfuse","return"].filter(function(p){return pages.indexOf(p)>=0;}).map(navBtn).join("") +
+      '<div class="rail-group">ข้อมูลและรายงาน</div>' +
+      ["registry","react"].filter(function(p){return pages.indexOf(p)>=0;}).map(navBtn).join("") +
+      (pages.indexOf("admin")>=0 ? '<div class="rail-group">ผู้ดูแลระบบ</div>'+navBtn("admin") : "") +
+      '<div style="margin-top:auto;padding-top:14px">' +
+        '<button class="nav" data-act="pin">'+ICON.key+'<span>เปลี่ยนรหัสผ่าน</span></button>' +
+        '<button class="nav" data-act="logout">'+ICON.out+'<span>ออกจากระบบ</span></button></div>' +
+    '</aside>' +
+
+    '<div class="main">' +
+      '<header class="topbar">' +
+        (S.editBag ? '<button class="icon-btn narrow-only" data-act="cancelTx" aria-label="ย้อนกลับ">'+ICON.back+'</button>' : '') +
+        '<div style="min-width:0"><h1>'+esc(m.t)+'</h1><div class="sub">'+esc(m.s)+'</div></div>' +
+        '<div class="spacer"></div>' +
+        '<span class="stamp">'+esc(agoText())+'</span>' +
+        '<span id="sync" class="syncpill'+syncState().cls+'" data-act="resync" role="button" tabindex="0">' +
+          syncState().html + '</span>' +
+        '<button class="icon-btn" data-act="theme" aria-label="สลับโหมดสว่างมืด">'+ICON.moon+'</button>' +
+        '<button class="userchip" data-act="menu">' +
+          '<span class="txt"><span class="nm">'+esc(S.D.user.name)+'</span><br>' +
+          '<span class="rl">'+esc(roleLabel(S.D.user.role))+(S.D.user.unit!=="—"?" · "+esc(S.D.user.unit):"")+'</span></span>' +
+          '<span class="avatar">'+esc(initials(S.D.user.name))+'</span>' +
+        '</button>' +
+      '</header>' +
+      '<div class="content">'+pageBody()+'</div>' +
+    '</div>' +
+  '</div>' +
+  '<nav class="tabbar">'+tabs.map(tabBtn).join("") +
+    '<button class="tab" data-act="menu">'+ICON.more+'<span>เพิ่มเติม</span></button></nav>' +
+  (S.modal ? viewModal() : "");
+}
+
+function pageBody(){
+  switch (S.page) {
+    case "dash": return pageDash();
+    case "issue": return pageIssue();
+    case "transfuse": return pageTransfuse();
+    case "return": return pageReturn();
+    case "registry": return pageRegistry();
+    case "react": return pageReact();
+    case "diag": return pageDiag();
+    case "admin":
+      if (!S.admin) {
+        if (!S.adminLoading) {
+          S.adminLoading = true;
+          loadAdmin().then(function(){ S.adminLoading = false; paint(); })
+                     .catch(function(e){ S.adminLoading = false; paint(); toast(e.message, true); });
+        }
+        return adminSkeleton();
+      }
+      return pageAdmin();
+    default: return "";
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   6. ภาพรวม
+   ═══════════════════════════════════════════════════════════ */
+function pageDash(){
+  // สถิติ = เฉพาะถุงในปีงบประมาณที่เลือก · งานค้าง = ทุกถุงที่ยังไม่ปิด ไม่ว่าปีไหน
+  // ถุงที่ผู้ดูแลระบบยกเลิก (บันทึกผิด) ไม่ถูกนับทั้งสองทาง
+  var b = liveScoped();
+  var live = liveBags();
+  var done = b.filter(function(x){ return x.status==="DONE"; });
+  var react = done.filter(function(x){ return x.tx && x.tx.reaction; });
+  var returned = b.filter(function(x){ return x.status==="RETURNED"; });
+  var running = live.filter(function(x){ return x.status==="TRANSFUSING"; });
+  var pending = live.filter(function(x){ return x.status==="ISSUED"; });
+  var rate = done.length ? (react.length/done.length*100).toFixed(1) : "0.0";
+  var retRate = b.length ? (returned.length/b.length*100).toFixed(1) : "0.0";
+  var totalCc = done.reduce(function(s,x){ return s + (Number(x.tx && x.tx.volume)||0); }, 0);
+
+  var byComp = {}, byUnit = {}, byDx = {};
+  b.forEach(function(x){
+    byComp[x.comp] = (byComp[x.comp]||0)+1;
+    byUnit[x.unit] = (byUnit[x.unit]||0)+1;
+    if (x.tx && x.tx.dx) byDx[x.tx.dx] = (byDx[x.tx.dx]||0)+1;
+  });
+
+  var alerts = [];
+  running.forEach(function(x){ alerts.push({lvl:"warn",
+    txt: pt(x.hn).name + " — กำลังให้เลือด " + x.comp + " ตั้งแต่ " +
+         ((x.tx && x.tx.startD ? fmtDate(x.tx.startD)+" " : "") + ((x.tx&&x.tx.start)||"?")) +
+         " น. ยังไม่ปิดถุง"}); });
+  live.forEach(function(x){ var a = aboCheck(x); if (a) alerts.push({lvl:"crit", txt:"ถุง "+x.donorNo+" — "+a}); });
+  live.forEach(function(x){ if (x.status==="ISSUED" || x.status==="TRANSFUSING") {
+    var t = tempFlag(x.tempOut); if (t) alerts.push({lvl:"warn", txt:"ถุง "+x.donorNo+" — "+t+" ขณะจ่ายจาก Lab"}); } });
+
+  return '' +
+  '<div class="fybar">' +
+    '<span class="lbl">ปีงบประมาณ</span>' +
+    '<select id="fy-sel" aria-label="เลือกปีงบประมาณ">' +
+      (S.fyList||[]).map(function(f){
+        return '<option value="'+f+'"'+((!S.allFy && Number(S.fy)===Number(f))?" selected":"")+'>'+f+'</option>'; }).join("") +
+      '<option value="all"'+(S.allFy?" selected":"")+'>ทุกปีงบประมาณ</option>' +
+    '</select>' +
+    '<span class="range">'+esc(fyRangeText())+'</span>' +
+    ((!S.allFy && Number(S.fy)===Number(S.currentFy)) ? '<span class="now">ปีปัจจุบัน</span>' : '') +
+  '</div>' +
+
+  '<div class="kpis">' +
+    kpi("", "ถุงเลือดทั้งหมด", b.length, "ถุง", S.allFy ? "ทุกปีงบประมาณ" : fyLabel(S.fy)) +
+    kpi("k-ok", "ให้เลือดครบ", done.length, "ถุง", "รวม "+totalCc.toLocaleString()+" cc") +
+    kpi("k-warn", "กำลังให้เลือด", running.length, "ราย", "รอปิดถุง") +
+    kpi("k-crit", "อัตราการเกิดปฏิกิริยา", rate, "%", react.length+" จาก "+done.length+" ถุง") +
+    kpi("", "อัตราการคืนถุงเลือด", retRate, "%", returned.length+" ถุงคืน Lab") +
+  '</div>' +
+
+  (alerts.length ?
+    '<section class="card"><div class="card-h"><h2>ต้องติดตาม</h2><span class="note">'+alerts.length+' รายการ</span></div>' +
+    '<div class="card-b" style="display:flex;flex-direction:column;gap:9px">' +
+      alerts.map(function(a){ return '<div class="alert a-'+a.lvl+'">'+ICON.alert+'<div>'+esc(a.txt)+'</div></div>'; }).join("") +
+    '</div></section>'
+    : '<div class="alert a-ok">'+ICON.drop+'<div><b>ไม่มีรายการค้าง</b> — ถุงเลือดทุกถุงบันทึกครบและไม่พบข้อมูลผิดปกติ</div></div>') +
+
+  '<div class="grid2">' +
+    '<section class="card"><div class="card-h"><h2>แยกตามชนิดส่วนประกอบเลือด</h2></div>' +
+      '<div class="card-b"><div class="bars">'+barsHtml(byComp)+'</div></div></section>' +
+    '<section class="card"><div class="card-h"><h2>แยกตามหน่วยงานที่ให้เลือด</h2></div>' +
+      '<div class="card-b"><div class="bars">'+barsHtml(byUnit)+'</div></div></section>' +
+  '</div>' +
+
+  '<div class="grid2">' +
+    '<section class="card"><div class="card-h"><h2>ข้อบ่งชี้ในการให้เลือด</h2></div>' +
+      '<div class="card-b"><div class="bars">'+barsHtml(byDx)+'</div></div></section>' +
+    '<section class="card"><div class="card-h"><h2>ปริมาตรเลือดที่ให้รายเดือน</h2>' +
+      '<span class="note">'+(S.allFy?"ทุกปีงบประมาณ":"ต.ค. – ก.ย.")+' · cc</span></div>' +
+      '<div class="card-b">'+(S.allFy ? sparkVolume(done) : fyVolumeChart(done))+'</div></section>' +
+  '</div>' +
+
+  (pending.length ?
+    '<section class="card"><div class="card-h"><h2>ถุงเลือดที่รอเริ่มให้</h2>' +
+      '<span class="note">'+pending.length+' ถุง · ทุกปี</span><div class="spacer"></div>' +
+      (hasPage("transfuse") ? '<button class="btn sm" data-act="go" data-p="transfuse">ไปบันทึก</button>' : '') +
+    '</div><div class="card-b"><div class="baglist">' +
+      pending.slice(0,6).map(function(x){ return bagCard(x, ""); }).join("") +
+    '</div></div></section>' : "");
+}
+
+function kpi(cls, lab, val, unit, foot){
+  return '<div class="kpi '+cls+'"><div class="lab">'+esc(lab)+'</div>' +
+    '<div class="val">'+esc(val)+'<small>'+esc(unit)+'</small></div>' +
+    '<div class="foot">'+esc(foot)+'</div></div>';
+}
+
+function barsHtml(obj, critFirst){
+  var e = Object.keys(obj).map(function(k){ return [k, obj[k]]; }).sort(function(a,b){ return b[1]-a[1]; });
+  if (!e.length) return '<div class="empty">ยังไม่มีข้อมูล</div>';
+  var max = Math.max.apply(null, e.map(function(x){ return x[1]; }).concat([1]));
+  return e.map(function(x, i){
+    var color = (critFirst && i<2) ? ';background:var(--crit)' : '';
+    return '<div class="barrow"><span class="lb" title="'+esc(x[0])+'">'+esc(x[0])+'</span>' +
+      '<span class="bartrack"><span class="barfill '+(i>2?"b3":i>0?"b2":"")+'" style="width:'+Math.round(x[1]/max*100)+'%'+color+'"></span></span>' +
+      '<span class="vv">'+x[1]+'</span></div>';
+  }).join("");
+}
+
+/** ปริมาตรเลือดรายเดือนตลอดปีงบประมาณ ต.ค. → ก.ย. */
+function fyVolumeChart(done){
+  var startY = Number(String(S.fyStart||"").slice(0,4));
+  if (!startY) return sparkVolume(done);
+
+  var buckets = FY_MONTHS.map(function(m){
+    return {m:m, year: m >= 10 ? startY : startY + 1, cc:0, bags:0};
+  });
+  done.forEach(function(b){
+    var d = String(b.issuedAt||"");
+    var y = Number(d.slice(0,4)), m = Number(d.slice(5,7));
+    for (var i=0;i<buckets.length;i++){
+      if (buckets[i].m===m && buckets[i].year===y){
+        buckets[i].cc += Number(b.tx && b.tx.volume) || 0;
+        buckets[i].bags += 1;
+        break;
+      }
+    }
+  });
+  var max = Math.max.apply(null, buckets.map(function(x){ return x.cc; }));
+  if (!(max > 0)) return '<div class="empty">ยังไม่มีข้อมูลปริมาตรที่ให้ในปีงบประมาณนี้</div>';
+
+  var W = 360, H = 150, padB = 22, padT = 8;
+  var bw = W / buckets.length;
+  var bars = buckets.map(function(x,i){
+    var h = Math.max(x.cc ? 2 : 0, (x.cc/max) * (H - padB - padT));
+    var xx = i*bw + bw*0.18, w = bw*0.64, yy = H - padB - h;
+    var thisMonth = (!S.allFy && x.year === new Date().getFullYear() && x.m === (new Date().getMonth()+1));
+    return '<rect x="'+xx.toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'"' +
+      ' rx="2" fill="'+(thisMonth?"var(--accent)":"color-mix(in srgb,var(--accent) 55%,var(--surface))")+'">' +
+      '<title>'+esc(THMON[x.m-1])+' '+(x.year+543)+' · '+x.cc.toLocaleString()+' cc · '+x.bags+' ถุง</title></rect>';
+  }).join("");
+  var labels = buckets.map(function(x,i){
+    return '<text x="'+(i*bw + bw/2).toFixed(1)+'" y="'+(H-7)+'" text-anchor="middle" ' +
+      'font-size="9.5" fill="var(--muted)" font-family="var(--sans)">'+esc(THMON[x.m-1])+'</text>';
+  }).join("");
+
+  return '<svg class="mchart" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" ' +
+      'aria-label="ปริมาตรเลือดที่ให้รายเดือนตลอดปีงบประมาณ">' +
+      '<line x1="0" y1="'+(H-padB)+'" x2="'+W+'" y2="'+(H-padB)+'" stroke="var(--line)" stroke-width="1"/>' +
+      bars + labels + '</svg>' +
+    '<div class="mrow"><span>รวม '+buckets.reduce(function(s,x){return s+x.cc;},0).toLocaleString()+' cc</span>' +
+    '<span>สูงสุด '+max.toLocaleString()+' cc/เดือน</span></div>';
+}
+
+function sparkVolume(done){
+  var byDay = {};
+  done.forEach(function(b){ var d = String(b.issuedAt).slice(0,10);
+    byDay[d] = (byDay[d]||0) + (Number(b.tx && b.tx.volume)||0); });
+  var e = Object.keys(byDay).sort().map(function(k){ return [k, byDay[k]]; })
+    .filter(function(x){ return isFinite(x[1]); });
+  if (!e.length) return '<div class="empty">ยังไม่มีข้อมูล</div>';
+  var max = Math.max.apply(null, e.map(function(x){ return x[1]; }));
+  // ถุงที่ปิดแล้วแต่ยังไม่ได้กรอกปริมาตร จะทำให้ค่าสูงสุดเป็น 0 — ไม่ต้องวาดกราฟ
+  if (!(max > 0)) return '<div class="empty">ยังไม่มีข้อมูลปริมาตรที่ให้</div>';
+  var W = 520, H = 74, pad = 6;
+  var step = e.length > 1 ? (W-pad*2)/(e.length-1) : 0;
+  function px(i){ return pad + i*step; }
+  function py(v){ return H-pad - (v/max)*(H-pad*2); }
+  var line = e.map(function(x,i){ return px(i).toFixed(1)+","+py(x[1]).toFixed(1); }).join(" ");
+  var area = pad+","+(H-pad)+" "+line+" "+px(e.length-1).toFixed(1)+","+(H-pad);
+  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="ปริมาตรเลือดที่ให้รายวัน">' +
+    '<polygon points="'+area+'" fill="var(--accent-soft)"></polygon>' +
+    '<polyline points="'+line+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"></polyline>' +
+    '<circle cx="'+px(e.length-1).toFixed(1)+'" cy="'+py(e[e.length-1][1]).toFixed(1)+'" r="3.5" fill="var(--accent)"></circle></svg>' +
+    '<div class="mono" style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:4px">' +
+    '<span>'+fmtDate(e[0][0])+'</span><span>สูงสุด '+max.toLocaleString()+' cc</span><span>'+fmtDate(e[e.length-1][0])+'</span></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   7. การ์ดถุงเลือด
+   ═══════════════════════════════════════════════════════════ */
+function bagCard(b, buttons){
+  var p = pt(b.hn), st = STATUS[b.status] || STATUS.ISSUED;
+  var warn = aboCheck(b) || ((b.status==="ISSUED"||b.status==="TRANSFUSING") ? tempFlag(b.tempOut) : null);
+  return '<article class="bag s-'+String(b.status).toLowerCase()+'"><div class="stripe"></div><div class="bag-b">' +
+    '<div class="bag-top"><div class="who"><div class="nm">'+esc(p.name)+'</div>' +
+      '<div class="pt-hn">HN '+esc(p.hn)+' · '+esc(b.unit)+'</div></div>' +
+      '<span class="abo">'+esc(p.abo)+'</span></div>' +
+    '<dl class="bag-meta">' +
+      '<dt>Donor No.</dt><dd>'+esc(b.donorNo)+'</dd>' +
+      '<dt>ส่วนประกอบ</dt><dd>'+esc(b.comp)+' · หมู่ '+esc(b.donorAbo)+'</dd>' +
+      '<dt>จ่ายเมื่อ</dt><dd>'+esc(fmtDT(b.issuedAt))+'</dd>' +
+      '<dt>อุณหภูมิ</dt><dd>'+esc(b.tempOut)+'°C</dd></dl>' +
+    (warn ? '<div class="alert a-crit" style="padding:8px 9px;font-size:12.5px">'+ICON.alert+'<div>'+esc(warn)+'</div></div>' : '') +
+    '<div class="bag-foot"><span class="pill '+st.cls+'">'+st.label+'</span>' +
+      '<div class="bag-sp"></div>'+(buttons||'')+'</div>' +
+  '</div></article>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   8. รับเลือดจาก Lab
+   ═══════════════════════════════════════════════════════════ */
+function pageIssue(){
+  var list = bags().filter(function(b){ return b.status==="ISSUED"; });
+  return (can("saveIssue") ?
+    '<section class="card"><div class="card-h"><h2>บันทึกการจ่ายเลือด</h2>' +
+      '<span class="note">สำหรับเจ้าหน้าที่ห้อง Lab</span></div>' +
+    '<div class="card-b">'+formIssue()+'</div></section>'
+    : '<div class="alert a-info">'+ICON.inbox+'<div>หน่วยงานของท่านดูรายการถุงเลือดที่ห้อง Lab จ่ายมาแล้วได้ที่นี่ การบันทึกการจ่ายเลือดทำโดยเจ้าหน้าที่ห้อง Lab</div></div>') +
+
+  '<section class="card"><div class="card-h"><h2>ถุงเลือดที่จ่ายแล้ว รอเริ่มให้</h2>' +
+    '<span class="note">'+list.length+' ถุง</span></div><div class="card-b">' +
+    (list.length ? '<div class="baglist">' + list.map(function(b){
+        return bagCard(b,
+          (can("saveTransfusion") ? '<button class="btn sm" data-act="startTx" data-id="'+esc(b.id)+'">เริ่มให้เลือด</button>' : '') +
+          '<button class="btn sm quiet" data-act="openReturn" data-id="'+esc(b.id)+'">คืน Lab</button>');
+      }).join("") + '</div>'
+    : '<div class="empty">ไม่มีถุงเลือดค้างอยู่</div>') +
+  '</div></section>';
+}
+
+function formIssue(){
+  var unit = S.issueUnit || cfg("units")[0] || "Ward";
+  return '' +
+  '<div class="sect"><div class="sect-h"><span class="step">ขั้น 1</span><h3>ข้อมูลผู้ป่วยและถุงเลือด</h3>' +
+    '<span class="why">บันทึกลงชีต BloodIssue</span></div>' +
+  '<div class="formgrid">' +
+    '<div class="field full"><label for="i-hn">ผู้ป่วย — พิมพ์ HN หรือชื่อเพื่อค้นหา</label>' +
+      '<div class="withadd">' +
+        '<input id="i-hn" list="patlist" autocomplete="off" autocapitalize="none" placeholder="เช่น 900000001 หรือ สมใจ">' +
+        (can("addPatient") ? '<button class="icon-btn" data-act="addPatient" title="เพิ่มผู้ป่วยใหม่" aria-label="เพิ่มผู้ป่วยใหม่">+</button>' : '') +
+      '</div>' +
+      '<datalist id="patlist">' + P().map(function(x){
+        return '<option value="'+esc(x.hn)+' — '+esc(x.name)+'"></option>'; }).join("") + '</datalist>' +
+      '<span class="hint" id="i-hninfo">ทะเบียนผู้ป่วย '+P().length.toLocaleString()+' ราย · ถ้าเป็นผู้ป่วยใหม่ กดปุ่ม + เพื่อเพิ่ม</span></div>' +
+    '<div class="field"><label for="i-donor">Donor No.</label>' +
+      '<input id="i-donor" class="mono" inputmode="numeric" placeholder="449.68.0.00000"></div>' +
+    '<div class="field"><label for="i-comp">ชนิดส่วนประกอบเลือด</label><select id="i-comp">'+opt(cfg("components"))+'</select></div>' +
+    '<div class="field"><label for="i-abo">หมู่เลือด Donor</label><select id="i-abo">'+opt(["A","B","O","AB"])+'</select></div>' +
+    '<div class="field"><label for="i-unit">หน่วยงานผู้รับ</label><select id="i-unit">'+opt(cfg("units"), unit)+'</select></div>' +
+    '<div class="field"><label for="i-temp">อุณหภูมิก่อนส่ง (°C)</label>' +
+      '<input id="i-temp" type="number" step="0.1" inputmode="decimal" class="mono" placeholder="6.0">' +
+      '<span class="hint">ระบบจะเตือนเมื่อสูงกว่า '+esc((S.D.config&&S.D.config.tempLimit)||10)+'°C</span></div>' +
+    '<div class="field"><label for="i-issuer">ผู้จ่ายเลือด — เจ้าหน้าที่ห้องปฏิบัติการ</label>' +
+      pickStaff("i-issuer", "Lab", ["เจ้าหน้าที่ห้องปฏิบัติการ"], "", "เจ้าหน้าที่ห้องปฏิบัติการ") + '</div>' +
+    '<div class="field"><label for="i-carrier">ผู้ไปรับเลือด — ผู้ช่วยพยาบาล</label>' +
+      pickStaff("i-carrier", unit, ["ผู้ช่วยพยาบาล","พยาบาล"], "", "ผู้ช่วยพยาบาล") +
+      '<span class="hint">รายชื่อเปลี่ยนตามหน่วยงานผู้รับ · กด + เพื่อเพิ่มชื่อที่ยังไม่มี</span></div>' +
+  '</div>' +
+  '<div class="stickybar"><button class="btn" data-act="saveIssue">บันทึกการจ่ายเลือด</button>' +
+    '<button class="btn ghost" data-act="go" data-p="dash">ยกเลิก</button></div></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   9. บันทึกการให้เลือด
+   ═══════════════════════════════════════════════════════════ */
+function pageTransfuse(){
+  if (S.editBag) {
+    var b = bags().filter(function(x){ return x.id===S.editBag; })[0];
+    return b ? formTransfuse(b) : '<div class="empty">ไม่พบถุงเลือด</div>';
+  }
+  var all = bags();
+  var ready = all.filter(function(b){ return b.status==="ISSUED"; });
+  var running = all.filter(function(b){ return b.status==="TRANSFUSING"; });
+  var recent = all.filter(function(b){ return b.status==="DONE"; })
+    .sort(function(a,b){ return String(b.issuedAt).localeCompare(String(a.issuedAt)); }).slice(0,6);
+
+  return (running.length ?
+    '<section class="card"><div class="card-h"><h2>กำลังให้เลือดอยู่</h2>' +
+      '<span class="note">'+running.length+' ราย · ต้องบันทึกเวลาเลือดหมดและผลการเฝ้าระวัง</span></div>' +
+    '<div class="card-b"><div class="baglist">' + running.map(function(b){
+      return bagCard(b, '<button class="btn sm" data-act="startTx" data-id="'+esc(b.id)+'">บันทึกต่อ / ปิดถุง</button>');
+    }).join("") + '</div></div></section>' : '') +
+
+  '<section class="card"><div class="card-h"><h2>ถุงเลือดที่พร้อมเริ่มให้</h2>' +
+    '<span class="note">'+ready.length+' ถุง</span></div><div class="card-b">' +
+    (ready.length ? '<div class="baglist">' + ready.map(function(b){
+        return bagCard(b, '<button class="btn sm" data-act="startTx" data-id="'+esc(b.id)+'">เริ่มบันทึก</button>');
+      }).join("") + '</div>'
+    : '<div class="empty">ไม่มีถุงเลือดรอเริ่มให้ในหน่วยงานของท่าน</div>') +
+  '</div></section>' +
+
+  '<section class="card"><div class="card-h"><h2>บันทึกล่าสุด</h2></div>' +
+    '<div class="card-b">'+recordList(recent)+'</div></section>';
+}
+
+function formTransfuse(b){
+  var p = pt(b.hn), tx = b.tx || {};
+  var abo = aboCheck(b);
+  var reacted = !!tx.reaction;
+  var chk = function(v){ return v ? " checked" : ""; };
+
+  return '' +
+  '<div class="alert '+(abo?"a-crit":"a-info")+'">'+(abo?ICON.alert:ICON.needle)+'<div>' +
+    (abo ? '<b>หยุด — ห้ามให้เลือดถุงนี้</b><br>'+esc(abo)+' กรุณาติดต่อห้อง Lab ก่อนดำเนินการต่อ'
+         : 'กำลังบันทึกถุง <b class="mono">'+esc(b.donorNo)+'</b> · '+esc(b.comp)+' หมู่ '+esc(b.donorAbo)+
+           ' สำหรับ <b>'+esc(p.name)+'</b> (HN '+esc(p.hn)+' หมู่ '+esc(p.abo)+')') +
+  '</div></div>' +
+
+  '<section class="card"><div class="card-h">' +
+    '<h2>'+esc(p.name)+'</h2><span class="pt-hn mono">HN '+esc(p.hn)+'</span>' +
+    '<span class="tag">'+esc(b.unit)+'</span><div class="spacer"></div>' +
+    '<button class="btn sm ghost wide-only" data-act="cancelTx">ย้อนกลับ</button></div>' +
+  '<div class="card-b" style="display:flex;flex-direction:column;gap:18px">' +
+
+    '<div class="sect"><div class="sect-h"><span class="step">ขั้น 2</span><h3>ตรวจสอบก่อนให้เลือด</h3>' +
+      '<span class="why">พยาบาล 2 คนตรวจสอบร่วมกัน</span></div>' +
+      '<div class="checks" style="margin-bottom:14px">' +
+        '<label class="chk big'+(tx.v1?" done":"")+'"><input type="checkbox" class="v-check"'+chk(tx.v1)+'><span>ชื่อ–สกุล และ HN ตรงกับป้ายข้อมือผู้ป่วย</span></label>' +
+        '<label class="chk big'+(tx.v2?" done":"")+'"><input type="checkbox" class="v-check"'+chk(tx.v2)+'><span>หมู่เลือดผู้ป่วยตรงกับใบ Cross-matching</span></label>' +
+        '<label class="chk big'+(tx.v3?" done":"")+'"><input type="checkbox" class="v-check"'+chk(tx.v3)+'><span>Donor No. และชนิดเลือดตรงกับถุง</span></label>' +
+        '<label class="chk big'+(tx.v4?" done":"")+'"><input type="checkbox" class="v-check"'+chk(tx.v4)+'><span>วันหมดอายุถุงเลือดยังไม่เกินกำหนด</span></label>' +
+      '</div>' +
+      '<div class="formgrid">' +
+        '<div class="field"><label for="t-tempin">อุณหภูมิที่รับมา (°C)</label>' +
+          '<input id="t-tempin" type="number" step="0.1" inputmode="decimal" class="mono" value="'+esc(tx.tempIn||"")+'" placeholder="6.0"></div>' +
+        '<div class="field"><label for="t-checker">ผู้ตรวจสอบเลือด — พยาบาล</label>' +
+          pickStaff("t-checker", b.unit, ["พยาบาล"], tx.checker, "พยาบาล") + '</div>' +
+        '<div class="field"><label for="t-giver">ผู้ให้เลือด — พยาบาล</label>' +
+          pickStaff("t-giver", b.unit, ["พยาบาล"], tx.giver, "พยาบาล") + '</div>' +
+        '<div class="field"><label for="t-rbc">ลักษณะเม็ดเลือดแดงในถุง</label><select id="t-rbc">'+opt(cfg("rbcLook"), tx.rbc)+'</select></div>' +
+      '</div></div>' +
+
+    '<div class="sect"><div class="sect-h"><span class="step">ขั้น 3</span><h3>การให้เลือด</h3></div>' +
+      '<div class="formgrid">' +
+        '<div class="field"><label for="t-dx">ข้อบ่งชี้ / โรค</label><select id="t-dx">'+opt(cfg("diagnoses"), tx.dx)+'</select></div>' +
+        '<div class="field"><label for="t-vol">ปริมาตรที่ให้ (cc)</label>' +
+          '<input id="t-vol" type="number" inputmode="numeric" class="mono" value="'+esc(tx.volume||"")+'" placeholder="280"></div>' +
+        '<div class="field"><label for="t-start">เริ่มให้เลือด</label>' +
+          '<div class="dtpair">' +
+            '<input id="t-startd" type="date" class="mono" aria-label="วันที่เริ่มให้เลือด" ' +
+              'value="'+esc(tx.startD || b.issuedAt.slice(0,10) || todayIso())+'">' +
+            '<input id="t-start" type="time" class="mono" aria-label="เวลาเริ่มให้เลือด" value="'+esc(tx.start||"")+'">' +
+          '</div><span class="hint" id="t-starthint"></span></div>' +
+        '<div class="field"><label for="t-end">เลือดหมด</label>' +
+          '<div class="dtpair">' +
+            '<input id="t-endd" type="date" class="mono" aria-label="วันที่เลือดหมด" value="'+esc(tx.endD||"")+'">' +
+            '<input id="t-end" type="time" class="mono" aria-label="เวลาเลือดหมด" value="'+esc(tx.end||"")+'">' +
+          '</div>' +
+          '<span class="hint" id="t-endhint">เว้นว่างไว้หากยังให้ไม่เสร็จ</span></div>' +
+      '</div></div>' +
+
+    '<div class="sect"><div class="sect-h"><span class="step">ขั้น 3</span><h3>การเฝ้าระวังปฏิกิริยา</h3>' +
+      '<span class="why">เฝ้าสังเกต 15 นาทีแรกอย่างใกล้ชิด</span></div>' +
+      '<div class="radios" style="margin-bottom:14px">' +
+        '<label class="radio'+(!reacted?" on":"")+'"><input type="radio" name="react" value="0"'+(!reacted?" checked":"")+' data-act="toggleReact"> ไม่มีปฏิกิริยา</label>' +
+        '<label class="radio'+(reacted?" on-crit":"")+'"><input type="radio" name="react" value="1"'+(reacted?" checked":"")+' data-act="toggleReact"> มีปฏิกิริยา</label>' +
+      '</div>' +
+      '<div id="reactBox" class="'+(reacted?"":"hide")+'" style="display:flex;flex-direction:column;gap:14px">' +
+        '<div class="field" style="max-width:260px"><label for="t-rtime">เวลาที่เกิดปฏิกิริยา</label>' +
+          '<input id="t-rtime" type="time" class="mono" value="'+esc(tx.reactAt||"")+'"></div>' +
+        '<div><span class="sublabel">อาการที่พบ</span><div class="checks">' +
+          cfg("symptoms").map(function(s){ return '<label class="chk"><input type="checkbox" class="v-sym" value="'+esc(s)+'"' +
+            ((tx.symptoms||[]).indexOf(s)>=0?" checked":"")+'><span>'+esc(s)+'</span></label>'; }).join("") +
+        '</div></div>' +
+        '<div><span class="sublabel">การแก้ไข / การพยาบาล</span><div class="checks">' +
+          cfg("actions").map(function(a){ return '<label class="chk"><input type="checkbox" class="v-act" value="'+esc(a)+'"' +
+            ((tx.actions||[]).indexOf(a)>=0?" checked":"")+'><span>'+esc(a)+'</span></label>'; }).join("") +
+        '</div></div>' +
+      '</div></div>' +
+
+    '<div class="sect"><div class="sect-h"><span class="step">ขั้น 4</span><h3>ปิดถุงเลือด</h3></div>' +
+      '<div class="formgrid">' +
+        '<div class="field"><label for="t-set">มี transfusion set เสียบอยู่</label><select id="t-set">' +
+          '<option value=""'+(!tx.setLeft?" selected":"")+'>—</option>' + opt(["ไม่มี","มี"], tx.setLeft) + '</select></div>' +
+        '<div class="field"><label for="t-leak">ตำแหน่งที่เกิดรอยรั่ว</label>' +
+          '<input id="t-leak" value="'+esc(tx.leak||"")+'" placeholder="ไม่มี"></div>' +
+        '<div class="field full"><label for="t-note">หมายเหตุ</label>' +
+          '<textarea id="t-note" rows="2" placeholder="เช่น รายงานแพทย์เวร แพทย์มีคำสั่ง…">'+esc(tx.note||"")+'</textarea></div>' +
+      '</div></div>' +
+
+    '<div class="stickybar">' +
+      '<button class="btn" data-act="saveTx" data-id="'+esc(b.id)+'" data-close="1">บันทึกและปิดถุง</button>' +
+      '<button class="btn quiet" data-act="saveTx" data-id="'+esc(b.id)+'" data-close="0">บันทึกไว้ก่อน</button>' +
+      '<button class="btn ghost wide-only" data-act="cancelTx">ยกเลิก</button>' +
+    '</div>' +
+  '</div></section>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   10. คืนถุงเลือด
+   ═══════════════════════════════════════════════════════════ */
+function pageReturn(){
+  var all = bags();
+  var returnable = all.filter(function(b){ return b.status==="ISSUED" || b.status==="TRANSFUSING"; });
+  var returned = all.filter(function(b){ return b.status==="RETURNED"; })
+    .sort(function(a,b){ return String((b.ret||{}).at).localeCompare(String((a.ret||{}).at)); });
+
+  return '<div class="alert a-info">'+ICON.back+'<div>ใช้บันทึกถุงเลือดที่ <b>ไม่ได้ใช้</b> หรือ <b>ใช้ไม่หมด</b> และต้องส่งคืนห้อง Lab พร้อมเหตุผลและอุณหภูมิขณะคืน</div></div>' +
+
+  '<section class="card"><div class="card-h"><h2>ถุงเลือดที่คืนได้</h2>' +
+    '<span class="note">'+returnable.length+' ถุง</span></div><div class="card-b">' +
+    (returnable.length ? '<div class="baglist">' + returnable.map(function(b){
+      return bagCard(b, '<button class="btn sm" data-act="openReturn" data-id="'+esc(b.id)+'">บันทึกการคืน</button>');
+    }).join("") + '</div>' : '<div class="empty">ไม่มีถุงเลือดที่ต้องคืน</div>') +
+  '</div></section>' +
+
+  '<section class="card"><div class="card-h"><h2>ประวัติการคืนถุงเลือด</h2>' +
+    '<span class="note">'+returned.length+' รายการ</span></div><div class="card-b">' +
+    (returned.length ?
+      '<div class="rows narrow-only">' + returned.map(function(b){ var p=pt(b.hn), r=b.ret||{};
+        return '<div class="row-c" data-act="detail" data-id="'+esc(b.id)+'">' +
+          '<div class="row-top"><div class="nm">'+esc(p.name)+'</div><span class="abo">'+esc(p.abo)+'</span></div>' +
+          '<div class="row-sub"><span class="mono">'+esc(fmtDT(r.at))+'</span><span class="tag">'+esc(b.comp)+'</span>' +
+          '<span class="mono">'+esc(b.donorNo)+'</span></div>' +
+          '<div class="row-sub">'+esc(r.reason)+' · คืนที่ '+esc(r.tempBack)+'°C</div></div>';
+      }).join("") + '</div>' +
+      '<div class="tablewrap wide-only"><table><thead><tr><th>วันที่คืน</th><th>ผู้ป่วย</th><th>Donor No.</th>' +
+        '<th>ชนิด</th><th>เหตุผล</th><th class="num">อุณหภูมิ</th><th>ผู้คืน</th><th>Lab ผู้รับคืน</th></tr></thead><tbody>' +
+        returned.map(function(b){ var r=b.ret||{};
+          return '<tr><td class="mono nw">'+esc(fmtDT(r.at))+'</td>' +
+            '<td><div class="pt-name">'+esc(pt(b.hn).name)+'</div><div class="pt-hn">HN '+esc(b.hn)+'</div></td>' +
+            '<td class="mono nw">'+esc(b.donorNo)+'</td><td><span class="tag">'+esc(b.comp)+'</span></td>' +
+            '<td class="nw">'+esc(r.reason)+'</td><td class="num">'+esc(r.tempBack)+'°C</td>' +
+            '<td class="nw">'+esc(r.by)+'</td><td class="nw">'+esc(r.labReceiver)+'</td></tr>';
+        }).join("") + '</tbody></table></div>'
+    : '<div class="empty">ยังไม่มีประวัติการคืน</div>') +
+  '</div></section>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   11. ทะเบียน
+   ═══════════════════════════════════════════════════════════ */
+/**
+ * ช่องวันที่+เวลาในตาราง
+ * วันที่ตรงกับวันอ้างอิง (วันจ่ายเลือด / วันเริ่มให้) ก็แสดงแค่เวลา ตารางจะได้ไม่กว้างเกินจอ
+ * ต่างวันเมื่อไรค่อยขึ้นวันที่ให้เห็นเด่น — เป็นเคสที่ต้องสังเกต
+ */
+function dtCell(d, tm, sameAs){
+  if (!tm && !d) return '<span class="dt-t">—</span>';
+  var same = d && sameAs && d === sameAs;
+  if (same || !d) return '<div class="dt-d">'+esc(tm||"—")+'</div>';
+  return '<div class="dt-d dt-next" title="'+esc(fmtDate(d))+'">'+esc(fmtDate(d))+'</div>' +
+         '<div class="dt-t">'+esc(tm||"—")+'</div>';
+}
+
+function recordList(list){
+  if (!list.length) return '<div class="empty">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</div>';
+  return '' +
+  '<div class="rows narrow-only">' + list.map(function(b){
+    var p = pt(b.hn), t = b.tx || {}, st = STATUS[b.status] || STATUS.ISSUED;
+    return '<div class="row-c" data-act="detail" data-id="'+esc(b.id)+'">' +
+      '<div class="row-top"><div class="nm">'+esc(p.name)+'</div><span class="abo">'+esc(p.abo)+'</span></div>' +
+      '<div class="row-sub"><span class="mono">'+esc(fmtDate(b.issuedAt))+'</span>' +
+        '<span class="tag">'+esc(b.comp)+'</span><span>'+esc(b.unit)+'</span>' +
+        (t.volume ? '<span class="mono">'+esc(t.volume)+' cc</span>' : '') + '</div>' +
+      '<div class="row-sub mono" style="font-size:12px">'+esc(b.donorNo)+
+        (t.start ? ' · '+esc(fmtSpan(t)) : '') + '</div>' +
+      '<div class="row-foot"><span class="pill '+st.cls+'">'+st.label+'</span>' +
+        (t.reaction ? '<span class="pill p-react">มีปฏิกิริยา</span>' : '') +
+        (t.dx ? '<span class="tag">'+esc(t.dx)+'</span>' : '') + '</div></div>';
+  }).join("") + '</div>' +
+
+  '<div class="tablewrap wide-only"><table><thead><tr>' +
+    '<th>วันที่จ่าย</th><th>ผู้ป่วย</th><th>Donor No.</th><th>ชนิด</th><th>หมู่</th><th>หน่วยงาน</th>' +
+    '<th>ข้อบ่งชี้</th><th class="num">cc</th><th>เริ่มให้</th><th>เลือดหมด</th>' +
+    '<th>ปฏิกิริยา</th><th>สถานะ</th><th></th>' +
+  '</tr></thead><tbody>' + list.map(function(b){
+    var p = pt(b.hn), t = b.tx || {}, st = STATUS[b.status] || STATUS.ISSUED;
+    return '<tr><td class="mono nw">'+esc(fmtDate(b.issuedAt))+'</td>' +
+      '<td><div class="pt-name">'+esc(p.name)+'</div><div class="pt-hn">HN '+esc(p.hn)+'</div></td>' +
+      '<td class="mono nw">'+esc(b.donorNo)+'</td><td><span class="tag">'+esc(b.comp)+'</span></td>' +
+      '<td class="mono">'+esc(b.donorAbo)+'</td><td class="nw">'+esc(b.unit)+'</td>' +
+      '<td class="nw">'+esc(t.dx||"—")+'</td><td class="num">'+esc(t.volume||"—")+'</td>' +
+      '<td>'+dtCell(t.startD, t.start, String(b.issuedAt).slice(0,10))+'</td>' +
+      '<td>'+(t.end ? dtCell(t.endD, t.end, t.startD)
+                    : (b.tx ? '<span class="dt-t">ยังไม่ปิดถุง</span>' : '<span class="dt-t">—</span>'))+'</td>' +
+      '<td>'+(t.reaction?'<span class="pill p-react">มี</span>':(b.tx?'<span class="pill p-done">ไม่มี</span>':"—"))+'</td>' +
+      '<td><span class="pill '+st.cls+'">'+st.label+'</span></td>' +
+      '<td><button class="btn sm quiet" data-act="detail" data-id="'+esc(b.id)+'">ดู</button></td></tr>';
+  }).join("") + '</tbody></table></div>';
+}
+
+function pageRegistry(){
+  var f = S.filter, list = bags().slice();
+  if (f.q) { var q = f.q.toLowerCase();
+    list = list.filter(function(b){ return (pt(b.hn).name+" "+b.hn+" "+b.donorNo).toLowerCase().indexOf(q) >= 0; }); }
+  if (f.unit) list = list.filter(function(b){ return b.unit===f.unit; });
+  if (f.comp) list = list.filter(function(b){ return b.comp===f.comp; });
+  if (f.status) list = list.filter(function(b){ return b.status===f.status; });
+  if (f.react==="1") list = list.filter(function(b){ return b.tx && b.tx.reaction; });
+  list.sort(function(a,b){ return String(b.issuedAt).localeCompare(String(a.issuedAt)); });
+  var shown = list.slice(0, S.limit);
+
+  return '' +
+  '<section class="card"><div class="card-h"><h2>ตัวกรอง</h2><div class="spacer"></div>' +
+    '<button class="btn sm quiet" data-act="clearFilter">ล้าง</button>' +
+    '<button class="btn sm" data-act="exportCsv">'+ICON.down+' CSV</button></div>' +
+  '<div class="card-b"><div class="filters">' +
+    '<div class="field f-wide"><label for="f-q">ค้นหา ชื่อ / HN / Donor No.</label>' +
+      '<input id="f-q" value="'+esc(f.q||"")+'" placeholder="พิมพ์เพื่อค้นหา" autocapitalize="none"></div>' +
+    '<div class="field"><label for="f-unit">หน่วยงาน</label><select id="f-unit"><option value="">ทั้งหมด</option>'+opt(cfg("units"), f.unit)+'</select></div>' +
+    '<div class="field"><label for="f-comp">ชนิดเลือด</label><select id="f-comp"><option value="">ทั้งหมด</option>'+opt(cfg("components"), f.comp)+'</select></div>' +
+    '<div class="field"><label for="f-status">สถานะ</label><select id="f-status"><option value="">ทั้งหมด</option>' +
+      Object.keys(STATUS).map(function(k){ return '<option value="'+k+'"'+(f.status===k?" selected":"")+'>'+STATUS[k].label+'</option>'; }).join("") +
+    '</select></div>' +
+    '<div class="field"><label for="f-react">ปฏิกิริยา</label><select id="f-react"><option value="">ทั้งหมด</option>' +
+      '<option value="1"'+(f.react==="1"?" selected":"")+'>เฉพาะที่มีปฏิกิริยา</option></select></div>' +
+    '<div class="field"><label for="f-fy">ปีงบประมาณ</label><select id="f-fy">' +
+      (S.fyList||[]).map(function(x){
+        return '<option value="'+x+'"'+((!S.allFy && Number(S.fy)===Number(x))?" selected":"")+'>'+x+'</option>'; }).join("") +
+      '<option value="all"'+(S.allFy?" selected":"")+'>ทุกปีงบประมาณ</option></select></div>' +
+  '</div></div></section>' +
+
+  '<section class="card"><div class="card-h"><h2>ทะเบียนการให้เลือด</h2>' +
+    '<span class="note">'+list.length+' รายการ</span></div>' +
+    '<div class="card-b">'+recordList(shown) +
+      (list.length > shown.length ?
+        '<div style="padding-top:12px"><button class="btn quiet block" data-act="more">' +
+        'แสดงเพิ่มอีก '+Math.min(40, list.length-shown.length)+' รายการ</button></div>' : '') +
+      '<div class="hint" style="text-align:center;padding-top:12px">' +
+        (S.allFy ? 'แสดงข้อมูลทุกปีงบประมาณ'
+                 : 'แสดง'+fyLabel(S.fy)+' ('+esc(fyRangeText())+') และถุงที่ยังค้างอยู่ทุกปี') +
+      '</div>' +
+    '</div></section>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   12. ทะเบียนปฏิกิริยา
+   ═══════════════════════════════════════════════════════════ */
+function pageReact(){
+  var scoped = liveScoped();   // ถุงที่ยกเลิกไปแล้วไม่นับเป็นปฏิกิริยา
+  var list = scoped.filter(function(b){ return b.tx && b.tx.reaction; })
+    .sort(function(a,b){ return String(b.issuedAt).localeCompare(String(a.issuedAt)); });
+  var done = scoped.filter(function(b){ return b.status==="DONE"; }).length;
+  var symCount = {};
+  list.forEach(function(b){ (b.tx.symptoms||[]).forEach(function(s){ symCount[s]=(symCount[s]||0)+1; }); });
+  var stopped = list.filter(function(b){ return (b.tx.actions||[]).indexOf("หยุดให้เลือดทันที")>=0; }).length;
+
+  return '' +
+  '<div class="kpis">' +
+    kpi("k-crit", "เกิดปฏิกิริยา", list.length, "ราย", S.allFy ? "ทุกปีงบประมาณ" : fyLabel(S.fy)) +
+    kpi("", "อัตราการเกิด", done ? (list.length/done*100).toFixed(1) : "0.0", "%", "จากที่ให้ครบ "+done+" ถุง") +
+    kpi("k-warn", "ต้องหยุดให้เลือด", stopped, "ราย", "มีการ hold ถุงเลือด") +
+  '</div>' +
+
+  '<section class="card"><div class="card-h"><h2>อาการที่พบบ่อย</h2></div>' +
+    '<div class="card-b"><div class="bars">'+barsHtml(symCount, true)+'</div></div></section>' +
+
+  '<section class="card"><div class="card-h"><h2>รายละเอียดรายกรณี</h2>' +
+    '<span class="note">'+list.length+' รายการ</span></div>' +
+  '<div class="card-b" style="display:flex;flex-direction:column;gap:12px">' +
+    (list.length ? list.map(function(b){ var p=pt(b.hn), t=b.tx;
+      return '<div class="card" style="box-shadow:none"><div class="card-h">' +
+        '<span class="pill p-react">ปฏิกิริยา</span><h2 style="font-size:14.5px">'+esc(p.name)+'</h2>' +
+        '<span class="pt-hn mono">HN '+esc(p.hn)+'</span><span class="tag">'+esc(b.unit)+'</span>' +
+        '<div class="spacer"></div><span class="note mono">'+esc(fmtDate(b.issuedAt))+' · '+esc(t.reactAt||"?")+' น.</span></div>' +
+      '<div class="card-b" style="display:flex;flex-direction:column;gap:10px">' +
+        '<div><span style="font-size:12px;color:var(--muted)">อาการ · </span>' +
+          ((t.symptoms||[]).map(function(s){ return '<span class="tag" style="margin:0 4px 4px 0">'+esc(s)+'</span>'; }).join("") || "—") + '</div>' +
+        '<div><span style="font-size:12px;color:var(--muted)">การแก้ไข · </span>' +
+          ((t.actions||[]).map(function(s){ return '<span class="tag" style="margin:0 4px 4px 0">'+esc(s)+'</span>'; }).join("") || "—") + '</div>' +
+        (t.note ? '<div class="alert a-warn" style="font-size:13px">'+ICON.alert+'<div>'+esc(t.note)+'</div></div>' : '') +
+        '<div><button class="btn sm quiet" data-act="detail" data-id="'+esc(b.id)+'">ดูรายละเอียดถุงเลือด</button></div>' +
+      '</div></div>';
+    }).join("") : '<div class="empty">ยังไม่มีรายงานปฏิกิริยา</div>') +
+  '</div></section>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   13. ตั้งค่าระบบ
+   ═══════════════════════════════════════════════════════════ */
+function pageAdmin(){
+  var users = (S.admin && S.admin.users) || [];
+  return '' +
+  '<div class="alert '+(S.verBad?"a-crit":"a-ok")+'">'+(S.verBad?ICON.alert:ICON.gear)+'<div>' +
+    '<b>รุ่นของระบบ</b> — Code.gs: '+esc(S.serverVer||UI_VERSION)+' · Index.html: '+UI_VERSION+
+    (S.verBad ? ' — <b>ไม่ตรงกัน</b> ให้วางไฟล์ทั้งสองใหม่แล้ว Deploy เวอร์ชันใหม่'
+              : ' — ตรงกัน') + '</div></div>' +
+  '<div class="alert a-info">'+ICON.gear+'<div><b>แก้ไขข้อมูลได้ทุกอย่างจากหน้านี้</b> ไม่ต้องเปิด Google Sheet — ' +
+    'ทั้งทะเบียนผู้ป่วย เจ้าหน้าที่ ผู้ใช้งาน ค่าตั้งต้น และถุงเลือดย้อนหลัง (เปิดจากทะเบียนการให้เลือด) ' +
+    'ทุกการแก้ไขต้องระบุเหตุผล และถูกบันทึกไว้ว่าใครแก้ช่องไหน จากค่าอะไรเป็นค่าอะไร</div></div>' +
+
+  '<section class="card"><div class="card-h"><h2>ผู้ใช้งานระบบ</h2><span class="note">ชีต Users</span>' +
+    '<div class="spacer"></div><button class="btn sm" data-act="newUser">เพิ่มผู้ใช้</button></div>' +
+  '<div class="card-b">' +
+    '<div class="rows narrow-only">' + users.map(function(u){
+      return '<div class="row-c" data-act="editUser" data-u="'+esc(u.username)+'">' +
+        '<div class="row-top"><div class="nm">'+esc(u.name)+'</div>' +
+        (u.active?'<span class="pill p-done">ใช้งาน</span>':'<span class="pill p-returned">ปิด</span>')+'</div>' +
+        '<div class="row-sub"><span class="mono">'+esc(u.username)+'</span><span>'+esc(roleLabel(u.role))+'</span>' +
+        '<span>'+esc(u.unit)+'</span></div></div>';
+    }).join("") + '</div>' +
+    '<div class="tablewrap wide-only"><table class="narrow"><thead><tr><th>ชื่อผู้ใช้</th><th>ชื่อ-สกุล</th>' +
+      '<th>บทบาท</th><th>หน่วยงาน</th><th>สถานะ</th><th></th></tr></thead><tbody>' +
+      users.map(function(u){ return '<tr><td class="mono">'+esc(u.username)+'</td><td>'+esc(u.name)+'</td>' +
+        '<td>'+esc(roleLabel(u.role))+'</td><td>'+esc(u.unit)+'</td>' +
+        '<td>'+(u.active?'<span class="pill p-done">ใช้งาน</span>':'<span class="pill p-returned">ปิด</span>')+'</td>' +
+        '<td><button class="btn sm quiet" data-act="editUser" data-u="'+esc(u.username)+'">แก้ไข</button></td></tr>';
+      }).join("") + '</tbody></table></div>' +
+  '</div></section>' +
+
+  '<section class="card"><div class="card-h"><h2>ทะเบียนผู้ป่วย</h2>' +
+    '<span class="note">'+P().length.toLocaleString()+' ราย · ยังไม่ระบุหมู่เลือด ' +
+      P().filter(function(x){ return !x.abo; }).length.toLocaleString()+' ราย</span>' +
+    '<div class="spacer"></div><button class="btn sm" data-act="addPatient">เพิ่มผู้ป่วย</button></div>' +
+  '<div class="card-b">' +
+    (P().filter(function(x){ return !x.abo; }).length ?
+      '<div class="alert a-warn">'+ICON.alert+'<div>ผู้ป่วยที่ยังไม่ระบุหมู่เลือดจะ<b>ไม่ถูกเตือน</b>เมื่อหมู่เลือด Donor เข้ากันไม่ได้ ' +
+      'ค้นหาแล้วกดที่ชื่อเพื่อเติมหมู่เลือดได้เลย</div></div>' :
+      '<div class="alert a-ok">'+ICON.drop+'<div>ผู้ป่วยทุกรายระบุหมู่เลือดครบแล้ว — ระบบเตือนหมู่เลือดไม่เข้ากันทำงานเต็มที่</div></div>') +
+    '<div class="field"><label for="a-pq">ค้นหาผู้ป่วยเพื่อแก้ไข (HN หรือชื่อ)</label>' +
+      '<input id="a-pq" value="'+esc(S.ptQuery||"")+'" placeholder="พิมพ์ HN หรือชื่อ แล้วกดที่รายชื่อเพื่อแก้"></div>' +
+    patientResults() +
+  '</div></section>' +
+
+  '<section class="card"><div class="card-h"><h2>รายชื่อเจ้าหน้าที่</h2>' +
+    '<span class="note">ชีต Staff · '+(((S.admin&&S.admin.allStaff)||[]).length)+' คน</span><div class="spacer"></div>' +
+    '<button class="btn sm" data-act="newStaff">เพิ่มเจ้าหน้าที่</button></div>' +
+  '<div class="card-b" style="display:flex;flex-direction:column;gap:16px">' +
+    (function(){
+      var all = (S.admin && S.admin.allStaff) || [];
+      if (!all.length) return '<div class="empty">ยังไม่มีรายชื่อเจ้าหน้าที่</div>';
+      var order = [""].concat(cfg("units")).concat(["Lab"]);
+      var seen = {}, groups = [];
+      order.forEach(function(u){ if(!(u in seen)){ seen[u]=1; groups.push(u); } });
+      all.forEach(function(x){ var u=String(x.unit||""); if(!(u in seen)){ seen[u]=1; groups.push(u); } });
+      return groups.map(function(u){
+        var rows = all.filter(function(x){ return String(x.unit||"")===u; });
+        if (!rows.length) return "";
+        return '<div><span class="sublabel">'+(u===""?"ยังไม่ระบุหน่วยงาน (ขึ้นให้ทุกหน่วยงาน)":esc(u))+
+          ' · '+rows.length+' คน</span><div class="rows">' +
+          rows.map(function(x){
+            return '<div class="row-c" data-act="editStaff" data-n="'+esc(x.name)+'" style="padding:9px 11px;gap:5px">' +
+              '<div class="row-top"><div class="nm" style="font-size:14px">'+esc(x.name)+'</div>' +
+              '<span class="jobtag '+jobCls(x.job)+'">'+esc(x.job||"พยาบาล")+'</span></div>' +
+              (x.active===false ? '<div class="row-sub"><span class="pill p-returned">ปิดการใช้งาน</span></div>' : '') +
+              '</div>'; }).join("") + '</div></div>';
+      }).join("");
+    })() +
+  '</div></section>' +
+
+  '<div class="grid2">' +
+    '<section class="card"><div class="card-h"><h2>สิทธิ์ตามบทบาท</h2></div>' +
+      '<div class="card-b tablewrap"><table class="narrow"><thead><tr><th>บทบาท</th><th>ทำอะไรได้</th></tr></thead><tbody>' +
+      '<tr><td class="nw"><b>ผู้ดูแลระบบ</b></td><td>ทุกเมนู · จัดการผู้ใช้ · แก้ไขข้อมูลย้อนหลัง</td></tr>' +
+      '<tr><td class="nw"><b>Lab</b></td><td>บันทึกการจ่ายเลือด · รับคืนถุงเลือด · ดูรายงานทุกหน่วยงาน</td></tr>' +
+      '<tr><td class="nw"><b>Ward</b></td><td>บันทึกการให้เลือดและเฝ้าระวัง · คืนถุง · เห็นเฉพาะ Ward</td></tr>' +
+      '<tr><td class="nw"><b>LR</b></td><td>เหมือน Ward · เห็นเฉพาะ LR</td></tr>' +
+      '<tr><td class="nw"><b>ไตเทียม</b></td><td>เหมือน Ward · เห็นเฉพาะหน่วยไตเทียม</td></tr>' +
+      '</tbody></table></div></section>' +
+
+    '<section class="card"><div class="card-h"><h2>ชีตข้อมูลใน Google Sheet</h2></div>' +
+      '<div class="card-b tablewrap"><table class="narrow"><thead><tr><th>ชีต</th><th>เก็บอะไร</th></tr></thead><tbody>' +
+      '<tr><td class="mono">Users</td><td>ผู้ใช้ · รหัสผ่านแบบ hash · บทบาท · หน่วยงาน</td></tr>' +
+      '<tr><td class="mono">Patients</td><td>HN · ชื่อ-สกุล · หมู่เลือด (จากชีต Database เดิม)</td></tr>' +
+      '<tr><td class="mono">Staff</td><td>เจ้าหน้าที่ · หน่วยงาน · <b>ประเภทงาน</b> (พยาบาล / ผู้ช่วยพยาบาล / Lab)</td></tr>' +
+      '<tr><td class="mono">BloodIssue</td><td>การจ่าย–รับเลือด (จากชีต ก่อนเติมเลือด เดิม)</td></tr>' +
+      '<tr><td class="mono">Transfusion</td><td>การให้เลือดและการเฝ้าระวัง (จากชีต เติมเลือด เดิม)</td></tr>' +
+      '<tr><td class="mono">BloodReturn</td><td>การคืนถุงเลือดที่ไม่ได้ใช้ <b>(ชีตใหม่)</b></td></tr>' +
+      '<tr><td class="mono">Log</td><td>บันทึกทุกการแก้ไข ใคร–เมื่อไร–แก้อะไร <b>(ชีตใหม่)</b></td></tr>' +
+      '</tbody></table></div></section>' +
+  '</div>' +
+
+  '<section class="card"><div class="card-h"><h2>ค่าตั้งต้น (Dropdown)</h2>' +
+    '<span class="note">กดแก้ไขเพื่อเพิ่ม/ลบตัวเลือก</span></div>' +
+  '<div class="card-b" style="display:flex;flex-direction:column;gap:14px">' +
+    CFG_LISTS.map(function(x){
+      return '<div><div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">' +
+        '<span class="sublabel" style="margin:0">'+esc(x[0])+'</span><div class="spacer"></div>' +
+        '<button class="btn sm quiet" data-act="editCfg" data-k="'+x[1]+'">แก้ไข</button></div><div>' +
+        cfg(x[1]).map(function(v){ return '<span class="tag" style="margin:0 5px 5px 0">'+esc(v)+'</span>'; }).join("") +
+        '</div></div>'; }).join("") +
+  '</div></section>' +
+
+  logCard();
+}
+
+/** รายการค่าตั้งต้นที่แก้ได้จากหน้าเว็บ */
+var CFG_LISTS = [["ชนิดส่วนประกอบเลือด","components"],["ข้อบ่งชี้ / โรค","diagnoses"],
+  ["หน่วยงาน","units"],["ประเภทงานของเจ้าหน้าที่","jobs"],["อาการปฏิกิริยา","symptoms"],
+  ["การแก้ไข / การพยาบาล","actions"],["เหตุผลการคืนถุง","returnReasons"],
+  ["ลักษณะเม็ดเลือดแดง","rbcLook"],["สภาพถุงตอนคืน","returnCond"]];
+
+/** ผลการค้นหาผู้ป่วยในหน้าตั้งค่าระบบ — กดเพื่อแก้ไขได้ทันที */
+function patientResults(){
+  var q = String(S.ptQuery||"").trim().toLowerCase();
+  if (!q) return '<div class="hint" style="padding:4px 2px">พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา</div>';
+  if (q.length < 2) return '<div class="hint" style="padding:4px 2px">พิมพ์อีกเล็กน้อย…</div>';
+  var hit = P().filter(function(x){
+    return (String(x.hn)+" "+String(x.name)).toLowerCase().indexOf(q) >= 0; });
+  if (!hit.length) return '<div class="empty">ไม่พบผู้ป่วยที่ตรงกับ "'+esc(S.ptQuery)+'"</div>';
+  var show = hit.slice(0, 25);
+  return '<div style="display:flex;flex-direction:column;gap:7px">' +
+    show.map(function(x){
+      return '<div class="ptrow" data-act="editPatient" data-hn="'+esc(x.hn)+'">' +
+        '<div style="flex:1;min-width:0"><div style="font-weight:600">'+esc(x.name)+'</div>' +
+        '<div class="mono" style="font-size:12px;color:var(--muted)">HN '+esc(x.hn)+'</div></div>' +
+        (x.abo ? '<span class="ab">'+esc(x.abo)+' '+esc(x.rh||"")+'</span>'
+               : '<span class="no-ab">ยังไม่ระบุหมู่เลือด</span>') + '</div>'; }).join("") +
+    (hit.length > show.length
+      ? '<div class="hint">พบ '+hit.length.toLocaleString()+' ราย แสดง '+show.length+' รายแรก — พิมพ์ให้เจาะจงขึ้น</div>'
+      : '') + '</div>';
+}
+
+/** ประวัติการแก้ไขย้อนหลัง อ่านได้จากหน้าเว็บ ไม่ต้องเปิดชีต Log */
+function logCard(){
+  var log = (S.admin && S.admin.log) || [];
+  var edits = log.filter(function(x){ return EDIT_ACTIONS.indexOf(x.action) >= 0; });
+  return '<section class="card"><div class="card-h"><h2>ประวัติการแก้ไขข้อมูล</h2>' +
+    '<span class="note">'+edits.length+' รายการล่าสุด</span><div class="spacer"></div>' +
+    (S.logAll ? '' : '<button class="btn sm quiet" data-act="moreLog">ดูย้อนหลังเพิ่ม</button>') + '</div>' +
+  '<div class="card-b">' +
+    (edits.length ? edits.map(logItem).join("")
+      : '<div class="empty">ยังไม่มีการแก้ไขข้อมูลย้อนหลัง</div>') +
+  '</div></section>';
+}
+
+var EDIT_ACTIONS = ["adminEdit","voidBag","unvoidBag","editPatient","editStaff","editUser","editConfig"];
+var ACTION_LABEL = {
+  adminEdit:"แก้ข้อมูลถุงเลือด", voidBag:"ยกเลิกถุงเลือด", unvoidBag:"กู้คืนถุงเลือด",
+  editPatient:"แก้ทะเบียนผู้ป่วย", editStaff:"แก้ข้อมูลเจ้าหน้าที่",
+  editUser:"แก้ผู้ใช้งานระบบ", editConfig:"แก้ค่าตั้งต้น"
+};
+
+function logItem(x){
+  var who = userName(x.user);
+  return '<div class="logitem">' +
+    '<div class="lg-top"><span class="tag">'+esc(ACTION_LABEL[x.action]||x.action)+'</span>' +
+      (x.bagId ? '<span class="mono" style="font-size:12px">'+esc(x.bagId)+'</span>' : '') +
+      (x.target && x.target !== x.bagId ? '<span class="mono" style="font-size:12px">'+esc(x.target)+'</span>' : '') +
+      '<div class="spacer"></div><span class="lg-who">'+esc(who)+'</span>' +
+      '<span class="lg-when">'+esc(fmtDT(x.ts))+'</span></div>' +
+    (x.changes ? '<div class="lg-chg">'+esc(x.changes)+'</div>' : '') +
+    (x.reason ? '<div class="lg-why">เหตุผล: <b>'+esc(x.reason)+'</b></div>' : '') +
+    '</div>';
+}
+
+/** แปลงชื่อผู้ใช้เป็นชื่อ-สกุล ถ้ารู้จัก */
+function userName(u){
+  var list = (S.admin && S.admin.users) || [];
+  for (var i=0;i<list.length;i++) if (list[i].username === u) return list[i].name + " (" + u + ")";
+  return u;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   14. Modal / Bottom sheet
+   ═══════════════════════════════════════════════════════════ */
+function viewModal(){
+  var m = S.modal;
+  var head = function(icon, title, extra){
+    return '<div class="grab"></div><div class="modal-h">'+icon+'<h3>'+esc(title)+'</h3>' +
+      '<div class="spacer"></div>'+(extra||'')+'</div>';
+  };
+
+  if (m.type === "menu") {
+    var pages = (S.D.pages||[]).filter(function(x){ return x !== "diag"; });
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.more, "เมนูทั้งหมด") +
+      '<div class="modal-b">' +
+        '<div style="display:flex;align-items:center;gap:11px;padding-bottom:6px">' +
+          '<span class="avatar" style="width:40px;height:40px;font-size:15px">'+esc(initials(S.D.user.name))+'</span>' +
+          '<div><div style="font-weight:600">'+esc(S.D.user.name)+'</div>' +
+          '<div style="font-size:12.5px;color:var(--muted)">'+esc(roleLabel(S.D.user.role)) +
+            (S.D.user.unit!=="—"?" · "+esc(S.D.user.unit):"")+'</div></div></div>' +
+        '<div style="display:flex;flex-direction:column;gap:2px">' +
+          pages.map(function(p){ var mm=PAGE_META[p];
+            return '<button class="nav '+(S.page===p?"on":"")+'" data-act="go" data-p="'+p+'">'+ICON[mm.i]+'<span>'+esc(mm.t)+'</span></button>'; }).join("") +
+          '<button class="nav" data-act="reload">'+ICON.drop+'<span>โหลดข้อมูลใหม่</span></button>' +
+          '<button class="nav '+(S.page==="diag"?"on":"")+'" data-act="go" data-p="diag">' +
+            ICON.alert+'<span>ตรวจสอบระบบ</span></button>' +
+          '<button class="nav" data-act="pin">'+ICON.key+'<span>เปลี่ยนรหัสผ่าน</span></button>' +
+          '<button class="nav" data-act="logout">'+ICON.out+'<span>ออกจากระบบ</span></button>' +
+          '<div style="font-size:11.5px;color:var(--muted);text-align:center;padding:8px 0 2px">BloodSafe v'+esc(UI_VERSION)+'</div>' +
+        '</div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "pin") {
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.key, "เปลี่ยนรหัสผ่าน") +
+      '<div class="modal-b">' +
+        '<div class="field"><label for="p-new">รหัสผ่านใหม่ (อย่างน้อย 4 ตัว)</label>' +
+          '<input id="p-new" type="password" inputmode="numeric" autocomplete="new-password"></div>' +
+        '<div class="field"><label for="p-new2">ยืนยันรหัสผ่านใหม่</label>' +
+          '<input id="p-new2" type="password" inputmode="numeric" autocomplete="new-password"></div>' +
+        '<div class="actions"><button class="btn" data-act="savePin">บันทึกรหัสผ่าน</button>' +
+        '<button class="btn ghost" data-act="closeModal">ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "user") {
+    var u = (((S.admin&&S.admin.users)||[]).filter(function(x){ return x.username===m.username; })[0]) ||
+            {username:"", name:"", role:"ward", unit:"Ward", active:true};
+    var isNew = !m.username;
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.gear, isNew ? "เพิ่มผู้ใช้งาน" : "แก้ไขผู้ใช้งาน") +
+      '<div class="modal-b"><div class="formgrid">' +
+        '<div class="field"><label for="u-name">ชื่อ-สกุล</label><input id="u-name" value="'+esc(u.name)+'"></div>' +
+        '<div class="field"><label for="u-user">ชื่อผู้ใช้</label>' +
+          '<input id="u-user" class="mono" autocapitalize="none" value="'+esc(u.username)+'"'+(isNew?"":" readonly")+'></div>' +
+        '<div class="field"><label for="u-role">บทบาท</label><select id="u-role">' +
+          ["admin","lab","ward","lr","hd"].map(function(r){
+            return '<option value="'+r+'"'+(u.role===r?" selected":"")+'>'+esc(roleLabel(r))+'</option>'; }).join("") +
+        '</select></div>' +
+        '<div class="field"><label for="u-unit">หน่วยงาน</label><select id="u-unit">' +
+          opt(["—","Lab"].concat(cfg("units")), u.unit) + '</select></div>' +
+        '<div class="field"><label for="u-pin">รหัสผ่าน'+(isNew?"":" (เว้นว่างหากไม่เปลี่ยน)")+'</label>' +
+          '<input id="u-pin" type="password" inputmode="numeric" placeholder="'+(isNew?"1234":"••••")+'"></div>' +
+        '<div class="field"><label for="u-active">สถานะ</label><select id="u-active">' +
+          '<option value="1"'+(u.active?" selected":"")+'>ใช้งาน</option>' +
+          '<option value="0"'+(!u.active?" selected":"")+'>ปิดการใช้งาน</option></select></div>' +
+      '</div>' +
+      (isNew ? '' : reasonField("u-reason", "เช่น ย้ายหน่วยงาน / ผู้ใช้ลืมรหัสผ่าน")) +
+      '<div class="actions"><button class="btn" data-act="saveUser" data-new="'+(isNew?1:0)+'">บันทึก</button>' +
+      '<button class="btn ghost" data-act="closeModal">ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "patient") {
+    var pp = P().filter(function(x){ return String(x.hn)===String(m.hn); })[0] ||
+             {hn:(m.hn||""), name:"", abo:"", rh:""};
+    var isNewP = !m.hn;
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.drop, isNewP ? "เพิ่มผู้ป่วยใหม่" : "แก้ไขทะเบียนผู้ป่วย") +
+      '<div class="modal-b">' +
+        '<div class="alert a-info">'+ICON.alert+'<div><b>หมู่เลือดผู้ป่วยสำคัญมาก</b> — ระบบใช้ค่านี้เตือนเมื่อหมู่เลือด Donor เข้ากับผู้ป่วยไม่ได้ ถ้าเว้นว่างจะไม่มีการเตือน</div></div>' +
+        '<div class="formgrid">' +
+          '<div class="field"><label for="pt-hn">HN</label>' +
+            '<input id="pt-hn" class="mono" inputmode="numeric" autocomplete="off" value="'+esc(pp.hn)+'" placeholder="900000001"></div>' +
+          '<div class="field"><label for="pt-name">ชื่อ-สกุล</label>' +
+            '<input id="pt-name" value="'+esc(pp.name)+'" placeholder="เช่น นางสมใจ ใจดี"></div>' +
+          '<div class="field"><label for="pt-abo">หมู่เลือด (ABO)</label><select id="pt-abo">' +
+            '<option value=""'+(!pp.abo?" selected":"")+'>— ยังไม่ทราบ —</option>'+opt(["A","B","O","AB"], pp.abo)+'</select></div>' +
+          '<div class="field"><label for="pt-rh">Rh</label><select id="pt-rh">' +
+            '<option value=""'+(!pp.rh?" selected":"")+'>— ยังไม่ทราบ —</option>'+opt(["Rh+","Rh-"], pp.rh)+'</select></div>' +
+        '</div>' +
+        (isNewP ? '' : reasonField("pt-reason", "เช่น ผล lab ยืนยันหมู่เลือด / คีย์ HN ผิดหนึ่งหลัก")) +
+        '<div class="actions"><button class="btn" data-act="savePatient">บันทึกผู้ป่วย</button>' +
+        '<button class="btn ghost" data-act="closeModal">ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "staff") {
+    var list = (S.admin && S.admin.allStaff) || S.D.staff || [];
+    var st = list.filter(function(x){ return x.name===m.name; })[0] ||
+             {unit:(m.unit||""), name:"", job:(m.job||"พยาบาล"), active:true};
+    var isNew = !m.name;
+    var myUnits = S.D.units;   // null = เพิ่มได้ทุกหน่วยงาน
+    var unitList = myUnits ? myUnits.slice() : [""].concat(["Lab"]).concat(cfg("units"));
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.gear, isNew ? "เพิ่มรายชื่อเจ้าหน้าที่" : "แก้ไขข้อมูลเจ้าหน้าที่") +
+      '<div class="modal-b">' +
+        (isNew ? '<div class="alert a-info">'+ICON.drop+'<div>ใส่คำนำหน้าให้ตรงกับที่ใช้ในเวชระเบียน เช่น <b>น.ส.สมหญิง รักงาน</b></div></div>' : '') +
+        '<div class="formgrid">' +
+          '<div class="field full"><label for="s-name">ชื่อ-สกุล</label>' +
+            '<input id="s-name" value="'+esc(st.name)+'" placeholder="เช่น นางมาลี ทดลองงาน"></div>' +
+          '<div class="field"><label for="s-job">ประเภทงาน</label><select id="s-job">' +
+            opt(cfg("jobs").length?cfg("jobs"):JOBS, st.job) + '</select></div>' +
+          '<div class="field"><label for="s-unit">หน่วยงาน</label><select id="s-unit">' +
+            unitList.map(function(u){
+              return '<option value="'+esc(u)+'"'+(String(st.unit)===String(u)?" selected":"")+'>' +
+                     (u===""?"ทุกหน่วยงาน":esc(u))+'</option>'; }).join("") + '</select></div>' +
+          (can("adminWrite") ?
+          '<div class="field"><label for="s-active">สถานะ</label><select id="s-active">' +
+            '<option value="1"'+(st.active!==false?" selected":"")+'>ใช้งาน</option>' +
+            '<option value="0"'+(st.active===false?" selected":"")+'>ปิดการใช้งาน</option></select></div>'
+          : '<input type="hidden" id="s-active" value="1">') +
+        '</div>' +
+        (isNew ? '' : reasonField("s-reason", "เช่น สะกดชื่อผิด / ย้ายหน่วยงาน / ลาออก")) +
+        '<div class="actions"><button class="btn" data-act="saveStaff">บันทึก</button>' +
+        '<button class="btn ghost" data-act="closeModal">ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "cfg") {
+    var lab = (CFG_LISTS.filter(function(x){ return x[1]===m.key; })[0]||["",m.key])[0];
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.gear, "แก้ไขตัวเลือก: " + lab) +
+      '<div class="modal-b">' +
+        '<div class="alert a-info">'+ICON.alert+'<div>พิมพ์<b>บรรทัดละหนึ่งตัวเลือก</b> เรียงตามลำดับที่อยากให้ขึ้นใน dropdown ' +
+          'การแก้ที่นี่มีผลกับการบันทึกครั้งต่อไป ข้อมูลที่บันทึกไว้แล้วไม่เปลี่ยน</div></div>' +
+        '<div class="field"><label for="cf-list">ตัวเลือกทั้งหมด</label>' +
+          '<textarea id="cf-list" rows="10" class="mono">'+esc(cfg(m.key).join("\n"))+'</textarea></div>' +
+        reasonField("cf-reason", "เช่น เพิ่มชนิดเลือดใหม่ / ตัดตัวเลือกที่เลิกใช้") +
+        '<div class="actions"><button class="btn" data-act="saveCfg" data-k="'+esc(m.key)+'">บันทึก</button>' +
+        '<button class="btn ghost" data-act="closeModal">ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  var b = bags().filter(function(x){ return x.id === m.id; })[0];
+  if (!b) return '';
+  var p = pt(b.hn);
+
+  if (m.type === "void") {
+    var undoing = b.status === "VOID";
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.alert, undoing ? "กู้คืนถุงเลือด" : "ยกเลิกถุงเลือด") +
+      '<div class="modal-b">' +
+        '<div class="alert '+(undoing?"a-ok":"a-warn")+'">'+ICON.alert+'<div>' +
+          (undoing
+            ? 'ถุงนี้จะกลับมาใช้งานและถูกนับในสถิติอีกครั้ง ระบบจะคืนสถานะตามข้อมูลที่บันทึกไว้จริง'
+            : '<b>ข้อมูลไม่ถูกลบ</b> ถุงนี้จะถูกทำเครื่องหมายว่ายกเลิก ไม่ถูกนับในสถิติและไม่ขึ้นเป็นงานค้าง ' +
+              'แต่ยังค้นเจอในทะเบียนและกู้คืนได้ตลอด') + '</div></div>' +
+        '<dl class="dl">' +
+          '<dt>ผู้ป่วย</dt><dd><b>'+esc(p.name)+'</b> · HN <span class="mono">'+esc(p.hn)+'</span></dd>' +
+          '<dt>Donor No.</dt><dd class="mono">'+esc(b.donorNo)+'</dd>' +
+          '<dt>จ่ายจาก Lab</dt><dd>'+esc(fmtDT(b.issuedAt))+'</dd>' +
+          '<dt>สถานะตอนนี้</dt><dd>'+esc((STATUS[b.status]||STATUS.ISSUED).label)+'</dd></dl>' +
+        reasonField("v-reason", undoing ? "เช่น ยกเลิกผิดถุง" : "เช่น คีย์ซ้ำสองครั้ง / บันทึกผิดคน") +
+        '<div class="actions">' +
+          '<button class="btn '+(undoing?"":"crit")+'" data-act="doVoid" data-id="'+esc(b.id)+'" ' +
+            'data-undo="'+(undoing?1:0)+'">'+(undoing?"กู้คืนถุงเลือด":"ยืนยันการยกเลิก")+'</button>' +
+          '<button class="btn ghost" data-act="closeModal">ไม่ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "return") {
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.back, "บันทึกการคืนถุงเลือด") +
+      '<div class="modal-b">' +
+        '<dl class="dl">' +
+          '<dt>ผู้ป่วย</dt><dd><b>'+esc(p.name)+'</b> · HN <span class="mono">'+esc(p.hn)+'</span></dd>' +
+          '<dt>Donor No.</dt><dd class="mono">'+esc(b.donorNo)+'</dd>' +
+          '<dt>ส่วนประกอบ</dt><dd>'+esc(b.comp)+' · หมู่ '+esc(b.donorAbo)+'</dd>' +
+          '<dt>หน่วยงาน</dt><dd>'+esc(b.unit)+'</dd></dl>' +
+        '<div class="formgrid">' +
+          '<div class="field full"><label for="r-reason">เหตุผลที่คืน</label><select id="r-reason">'+opt(cfg("returnReasons"))+'</select></div>' +
+          '<div class="field"><label for="r-temp">อุณหภูมิขณะคืน (°C)</label>' +
+            '<input id="r-temp" type="number" step="0.1" inputmode="decimal" class="mono" placeholder="8.0"></div>' +
+          '<div class="field"><label for="r-cond">สภาพถุงเลือด</label><select id="r-cond">'+opt(cfg("returnCond"))+'</select></div>' +
+          '<div class="field"><label for="r-by">ผู้ส่งคืน</label><select id="r-by">' +
+            '<optgroup label="ผู้ช่วยพยาบาล">'+opt(staffOf(b.unit,"ผู้ช่วยพยาบาล"))+'</optgroup>' +
+            '<optgroup label="พยาบาล">'+opt(staffOf(b.unit,"พยาบาล"))+'</optgroup></select></div>' +
+          '<div class="field"><label for="r-lab">เจ้าหน้าที่ Lab ผู้รับคืน</label>' +
+            '<select id="r-lab">'+opt(staffOf("Lab","เจ้าหน้าที่ห้องปฏิบัติการ"))+'</select></div>' +
+          '<div class="field full"><label for="r-note">หมายเหตุ</label><textarea id="r-note" rows="2"></textarea></div>' +
+        '</div>' +
+        '<div class="actions"><button class="btn" data-act="saveReturn" data-id="'+esc(b.id)+'">บันทึกการคืน</button>' +
+        '<button class="btn ghost" data-act="closeModal">ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "editbag") {
+    var t = b.tx || {}, q = b.ret || {};
+    var reacted = !!t.reaction;
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.gear, "แก้ไขข้อมูลถุง " + b.donorNo) +
+      '<div class="modal-b">' +
+        '<div class="alert a-warn">'+ICON.alert+'<div>กำลังแก้ข้อมูลที่บันทึกไปแล้ว — ' +
+          'ระบบจะเก็บไว้ว่าแก้ช่องไหน จากค่าอะไรเป็นค่าอะไร ใครแก้ และเพราะอะไร ' +
+          '<b>ช่องที่ไม่ได้แตะจะไม่ถูกบันทึกเป็นการแก้ไข</b></div></div>' +
+
+        '<div class="sect sect-admin"><div class="sect-h"><h3>ข้อมูลการจ่ายเลือดจากห้อง Lab</h3></div>' +
+          '<div class="formgrid">' +
+            '<div class="field"><label for="e-issuedAt">วันเวลาที่จ่ายเลือด</label>' +
+              '<input id="e-issuedAt" type="datetime-local" class="mono" value="'+esc(String(b.issuedAt).slice(0,16))+'"></div>' +
+            '<div class="field"><label for="e-hn">HN ผู้ป่วย</label>' +
+              '<input id="e-hn" class="mono" value="'+esc(b.hn)+'">' +
+              '<span class="hint" id="e-hninfo">'+esc(pt(b.hn).name)+'</span></div>' +
+            '<div class="field"><label for="e-donorNo">Donor No.</label>' +
+              '<input id="e-donorNo" class="mono" value="'+esc(b.donorNo)+'"></div>' +
+            '<div class="field"><label for="e-comp">ชนิดส่วนประกอบ</label>' +
+              '<select id="e-comp">'+optKeep(cfg("components"), b.comp)+'</select></div>' +
+            '<div class="field"><label for="e-donorAbo">หมู่เลือด Donor</label>' +
+              '<select id="e-donorAbo">'+optKeep(["A","B","O","AB"], b.donorAbo)+'</select></div>' +
+            '<div class="field"><label for="e-tempOut">อุณหภูมิก่อนส่ง (°C)</label>' +
+              '<input id="e-tempOut" type="number" step="0.1" inputmode="decimal" class="mono" value="'+esc(b.tempOut)+'"></div>' +
+            '<div class="field"><label for="e-labIssuer">ผู้จ่ายเลือด (Lab)</label>' +
+              '<select id="e-labIssuer">'+optKeep(staffOf("Lab","เจ้าหน้าที่ห้องปฏิบัติการ"), b.labIssuer)+'</select></div>' +
+            '<div class="field"><label for="e-carrier">ผู้ไปรับเลือด</label>' +
+              '<select id="e-carrier">'+optKeep(staffOf(b.unit,"ผู้ช่วยพยาบาล").concat(staffOf(b.unit,"พยาบาล")), b.carrier)+'</select></div>' +
+            '<div class="field"><label for="e-unit">หน่วยงาน</label>' +
+              '<select id="e-unit">'+optKeep(cfg("units"), b.unit)+'</select></div>' +
+            '<div class="field"><label for="e-status">สถานะ</label><select id="e-status">' +
+              ["ISSUED","TRANSFUSING","DONE","RETURNED","VOID"].map(function(k){
+                return '<option value="'+k+'"'+(b.status===k?" selected":"")+'>'+esc(STATUS[k].label)+'</option>'; }).join("") +
+            '</select><span class="hint">เปลี่ยนเฉพาะเมื่อสถานะไม่ตรงกับความจริง</span></div>' +
+          '</div></div>' +
+
+        '<div class="sect sect-admin"><div class="sect-h"><h3>บันทึกการให้เลือด</h3>' +
+          (b.tx ? '' : '<span class="why">ถุงนี้ยังไม่มีบันทึก — กรอกเพื่อเพิ่มย้อนหลัง</span>') + '</div>' +
+          '<div class="checks" style="margin-bottom:13px">' +
+            ["ชื่อ-HN ตรงกับผู้ป่วย","หมู่เลือดตรงกับใบคล้อง","Donor No. ตรงกับถุง","ตรวจสอบวันหมดอายุแล้ว"]
+              .map(function(lbl,i){
+                var on = t["v"+(i+1)];
+                return '<label class="chk'+(on?" done":"")+'"><input type="checkbox" class="e-check"'+(on?" checked":"")+
+                       '><span>'+esc(lbl)+'</span></label>'; }).join("") +
+          '</div>' +
+          '<div class="formgrid">' +
+            '<div class="field"><label for="e-tempIn">อุณหภูมิที่รับมา (°C)</label>' +
+              '<input id="e-tempIn" type="number" step="0.1" inputmode="decimal" class="mono" value="'+esc(t.tempIn==null?"":t.tempIn)+'"></div>' +
+            '<div class="field"><label for="e-dx">ข้อบ่งชี้ / โรค</label>' +
+              '<select id="e-dx">'+optKeep(cfg("diagnoses"), t.dx)+'</select></div>' +
+            '<div class="field"><label for="e-volume">ปริมาตรที่ให้ (cc)</label>' +
+              '<input id="e-volume" type="number" inputmode="numeric" class="mono" value="'+esc(t.volume==null?"":t.volume)+'"></div>' +
+            '<div class="field"><label for="e-checker">ผู้ตรวจสอบเลือด</label>' +
+              '<select id="e-checker">'+optKeep(staffOf(b.unit,"พยาบาล"), t.checker)+'</select></div>' +
+            '<div class="field"><label for="e-giver">ผู้ให้เลือด</label>' +
+              '<select id="e-giver">'+optKeep(staffOf(b.unit,"พยาบาล"), t.giver)+'</select></div>' +
+            '<div class="field"><label for="e-rbc">ลักษณะเม็ดเลือดแดง</label>' +
+              '<select id="e-rbc">'+optKeep(cfg("rbcLook"), t.rbc)+'</select></div>' +
+            '<div class="field"><label for="e-startDate">เริ่มให้เลือด</label><div class="dtpair">' +
+              '<input id="e-startDate" type="date" class="mono" value="'+esc(t.startD||"")+'">' +
+              '<input id="e-startTime" type="time" class="mono" value="'+esc(t.start||"")+'"></div></div>' +
+            '<div class="field"><label for="e-endDate">เลือดหมด</label><div class="dtpair">' +
+              '<input id="e-endDate" type="date" class="mono" value="'+esc(t.endD||"")+'">' +
+              '<input id="e-endTime" type="time" class="mono" value="'+esc(t.end||"")+'"></div></div>' +
+            '<div class="field"><label for="e-setLeft">transfusion set</label>' +
+              '<input id="e-setLeft" value="'+esc(t.setLeft||"")+'"></div>' +
+            '<div class="field"><label for="e-leak">รอยรั่ว</label>' +
+              '<select id="e-leak">'+optKeep(["ไม่มี","มี"], t.leak)+'</select></div>' +
+          '</div>' +
+          '<div class="formgrid" style="margin-top:13px">' +
+            '<div class="field"><label for="e-reaction">เกิดปฏิกิริยาหรือไม่</label><select id="e-reaction">' +
+              '<option value="0"'+(reacted?"":" selected")+'>ไม่มีปฏิกิริยา</option>' +
+              '<option value="1"'+(reacted?" selected":"")+'>มีปฏิกิริยา</option></select></div>' +
+            '<div class="field"><label for="e-reactAt">เวลาที่เกิดปฏิกิริยา</label>' +
+              '<input id="e-reactAt" type="time" class="mono" value="'+esc(t.reactAt||"")+'"></div>' +
+          '</div>' +
+          '<div style="margin-top:13px"><span class="sublabel">อาการที่พบ</span><div class="checks">' +
+            cfg("symptoms").map(function(x){
+              return '<label class="chk"><input type="checkbox" class="e-sym" value="'+esc(x)+'"' +
+                ((t.symptoms||[]).indexOf(x)>=0?" checked":"")+'><span>'+esc(x)+'</span></label>'; }).join("") +
+          '</div></div>' +
+          '<div style="margin-top:13px"><span class="sublabel">การแก้ไข / การพยาบาล</span><div class="checks">' +
+            cfg("actions").map(function(x){
+              return '<label class="chk"><input type="checkbox" class="e-act" value="'+esc(x)+'"' +
+                ((t.actions||[]).indexOf(x)>=0?" checked":"")+'><span>'+esc(x)+'</span></label>'; }).join("") +
+          '</div></div>' +
+          '<div class="field" style="margin-top:13px"><label for="e-note">หมายเหตุ</label>' +
+            '<textarea id="e-note" rows="2">'+esc(t.note||"")+'</textarea></div>' +
+        '</div>' +
+
+        '<div class="sect sect-admin"><div class="sect-h"><h3>การคืนถุงเลือด</h3>' +
+          (b.ret ? '' : '<span class="why">ถุงนี้ไม่มีการคืน — เว้นว่างไว้ได้</span>') + '</div>' +
+          '<div class="formgrid">' +
+            '<div class="field"><label for="e-retAt">วันเวลาที่คืน</label>' +
+              '<input id="e-retAt" type="datetime-local" class="mono" value="'+esc(String(q.at||"").slice(0,16))+'"></div>' +
+            '<div class="field"><label for="e-retReason">เหตุผลที่คืน</label>' +
+              '<select id="e-retReason">'+optKeep(cfg("returnReasons"), q.reason)+'</select></div>' +
+            '<div class="field"><label for="e-retBy">ผู้ส่งคืน</label>' +
+              '<select id="e-retBy">'+optKeep(staffOf(b.unit,"ผู้ช่วยพยาบาล").concat(staffOf(b.unit,"พยาบาล")), q.by)+'</select></div>' +
+            '<div class="field"><label for="e-retLab">Lab ผู้รับคืน</label>' +
+              '<select id="e-retLab">'+optKeep(staffOf("Lab","เจ้าหน้าที่ห้องปฏิบัติการ"), q.labReceiver)+'</select></div>' +
+            '<div class="field"><label for="e-tempBack">อุณหภูมิขณะคืน (°C)</label>' +
+              '<input id="e-tempBack" type="number" step="0.1" inputmode="decimal" class="mono" value="'+esc(q.tempBack==null?"":q.tempBack)+'"></div>' +
+            '<div class="field"><label for="e-cond">สภาพถุงเลือด</label>' +
+              '<select id="e-cond">'+optKeep(cfg("returnCond"), q.cond)+'</select></div>' +
+            '<div class="field full"><label for="e-retNote">หมายเหตุการคืน</label>' +
+              '<textarea id="e-retNote" rows="2">'+esc(q.note||"")+'</textarea></div>' +
+          '</div></div>' +
+
+        reasonField("e-reason", "เช่น คีย์ Donor No. ผิด / ปริมาตรพิมพ์เกินหนึ่งหลัก") +
+        '<div class="actions"><button class="btn" data-act="saveEditBag" data-id="'+esc(b.id)+'">บันทึกการแก้ไข</button>' +
+        '<button class="btn ghost" data-act="closeModal">ยกเลิก</button></div>' +
+      '</div></div></div>';
+  }
+
+  if (m.type === "detail") {
+    var t = b.tx || {}, r = b.ret;
+    var st = STATUS[b.status] || STATUS.ISSUED;
+    return '<div class="overlay" data-act="closeModal"><div class="modal" data-stop="1">' +
+      head(ICON.list, "ถุง " + b.donorNo, '<span class="pill '+st.cls+'">'+st.label+'</span>') +
+      '<div class="modal-b"><dl class="dl">' +
+        '<dt>ผู้ป่วย</dt><dd><b>'+esc(p.name)+'</b> · HN <span class="mono">'+esc(p.hn)+'</span> · หมู่ '+esc(p.abo)+' '+esc(p.rh||"")+'</dd>' +
+        '<dt>ส่วนประกอบ</dt><dd>'+esc(b.comp)+' · หมู่ Donor '+esc(b.donorAbo)+'</dd>' +
+        '<dt>จ่ายจาก Lab</dt><dd>'+esc(fmtDT(b.issuedAt))+' โดย '+esc(b.labIssuer)+'</dd>' +
+        '<dt>ผู้ไปรับเลือด</dt><dd>'+esc(b.carrier)+' · อุณหภูมิก่อนส่ง '+esc(b.tempOut)+'°C</dd>' +
+        '<dt>หน่วยงาน</dt><dd>'+esc(b.unit)+'</dd>' +
+        (b.tx ?
+          '<dt>อุณหภูมิที่รับมา</dt><dd>'+esc(t.tempIn)+'°C</dd>' +
+          '<dt>ข้อบ่งชี้</dt><dd>'+esc(t.dx)+'</dd>' +
+          '<dt>ปริมาตร</dt><dd>'+esc(t.volume)+' cc</dd>' +
+          '<dt>เริ่มให้เลือด</dt><dd class="mono">'+(t.start ? esc(fmtDate(t.startD))+' '+esc(t.start)+' น.' : "—")+'</dd>' +
+          '<dt>เลือดหมด</dt><dd class="mono">'+(t.end ? esc(fmtDate(t.endD))+' '+esc(t.end)+' น.' +
+              (t.endD && t.startD && t.endD!==t.startD ? ' <span class="tag">ข้ามคืน</span>' : '')
+            : "ยังไม่ปิดถุง")+'</dd>' +
+          '<dt>ผู้ตรวจสอบ</dt><dd>'+esc(t.checker)+'</dd>' +
+          '<dt>ผู้ให้เลือด</dt><dd>'+esc(t.giver)+'</dd>' +
+          '<dt>ปฏิกิริยา</dt><dd>'+(t.reaction ? '<span class="pill p-react">มี · '+esc(t.reactAt)+' น.</span>' : '<span class="pill p-done">ไม่มี</span>')+'</dd>' +
+          (t.reaction ?
+            '<dt>อาการ</dt><dd>'+((t.symptoms||[]).map(function(s){ return '<span class="tag" style="margin:0 4px 4px 0">'+esc(s)+'</span>'; }).join("")||"—")+'</dd>' +
+            '<dt>การแก้ไข</dt><dd>'+((t.actions||[]).map(function(s){ return '<span class="tag" style="margin:0 4px 4px 0">'+esc(s)+'</span>'; }).join("")||"—")+'</dd>' : '') +
+          '<dt>transfusion set</dt><dd>'+esc(t.setLeft||"—")+'</dd>' +
+          '<dt>รอยรั่ว</dt><dd>'+esc(t.leak||"—")+'</dd>' +
+          '<dt>เม็ดเลือดแดง</dt><dd>'+esc(t.rbc||"—")+'</dd>' +
+          '<dt>หมายเหตุ</dt><dd>'+esc(t.note||"—")+'</dd>' : '') +
+        (r ?
+          '<dt>คืนเมื่อ</dt><dd>'+esc(fmtDT(r.at))+'</dd>' +
+          '<dt>เหตุผล</dt><dd>'+esc(r.reason)+'</dd>' +
+          '<dt>ผู้คืน</dt><dd>'+esc(r.by)+'</dd>' +
+          '<dt>Lab ผู้รับคืน</dt><dd>'+esc(r.labReceiver)+'</dd>' +
+          '<dt>อุณหภูมิขณะคืน</dt><dd>'+esc(r.tempBack)+'°C · '+esc(r.cond)+'</dd>' +
+          '<dt>หมายเหตุ</dt><dd>'+esc(r.note||"—")+'</dd>' : '') +
+      '</dl>' +
+      (b.status==="VOID" ? '<div class="alert a-warn" style="margin-top:4px">'+ICON.alert+
+        '<div><b>ถุงนี้ถูกยกเลิก</b> ไม่ถูกนับในสถิติ ข้อมูลยังอยู่ครบและกู้คืนได้</div></div>' : '') +
+      '<div class="actions">' +
+        ((b.status!=="RETURNED" && b.status!=="VOID" && can("saveTransfusion")) ?
+          '<button class="btn" data-act="startTx" data-id="'+esc(b.id)+'">แก้ไขบันทึกการให้เลือด</button>' : '') +
+        (can("adminWrite") ?
+          '<button class="btn quiet" data-act="editBag" data-id="'+esc(b.id)+'">แก้ไขข้อมูลทั้งหมด</button>' : '') +
+        (can("deleteBag") ?
+          '<button class="btn '+(b.status==="VOID"?"quiet":"ghost")+'" data-act="askVoid" data-id="'+esc(b.id)+'">' +
+          (b.status==="VOID"?"กู้คืนถุงเลือด":"ยกเลิกถุงนี้")+'</button>' : '') +
+        '<button class="btn ghost" data-act="closeModal">ปิด</button></div>' +
+      '</div></div></div>';
+  }
+  return '';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   15. การกระทำ
+   ═══════════════════════════════════════════════════════════ */
+function busy(on){
+  S.busy = on;
+  var el = document.getElementById("ovl");
+  if (el) el.classList.toggle("hide", !on);
+}
+
+function doLogin(){
+  var u = ($("#lu").value||"").trim().toLowerCase();
+  var p = ($("#lp").value||"").trim();
+  S.loginUser = u; S.loginErr = "";
+  if (!u || !p) { S.loginErr = "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน"; return paint(); }
+  busy(true);
+  rpc("login", {username:u, pin:p}).then(function(d){
+    store("bs_token", d.token);
+    clearCache(); S.mv = ""; S.D = null; S.admin = null; S.allLoaded = false; S.days = 120;
+    return rpc("bootstrap", {mv:""}).then(function(D){
+      applyBoot(D);
+      S.page = (D.pages||["dash"])[0];
+      busy(false); S.loginErr = ""; paint(); startAutoSync();
+      if (d.mustChangePin) { S.modal = {type:"pin"}; paint();
+        toast("กรุณาเปลี่ยนรหัสผ่านเริ่มต้นเพื่อความปลอดภัย", true); }
+    });
+  }).catch(function(e){ busy(false); S.loginErr = e.message; paint(); });
+}
+
+/**
+ * ดึงข้อมูลล่าสุด
+ *  opts.bg    = true  → ทำงานเบื้องหลัง ไม่บังหน้าจอ
+ *  opts.days  = จำนวนวันย้อนหลังที่ต้องการ (ปกติ 120 วัน)
+ *  opts.quiet = true  → ไม่ต้องขึ้นข้อความแจ้ง
+ * ข้อมูลหลัก (ทะเบียนผู้ป่วย/เจ้าหน้าที่) จะถูกส่งมาเฉพาะตอนที่ฝั่งเซิร์ฟเวอร์เปลี่ยนเท่านั้น
+ */
+function refresh(opts){
+  opts = opts || {};
+  var req = {mv:S.mv};
+  if (opts.allFy) req.allFy = true;
+  else req.fy = opts.fy || S.fy || 0;
+  if (opts.bg) { S.syncing = true; syncPill(); } else busy(true);
+  return rpc("bootstrap", req).then(function(D){
+    applyBoot(D);
+    S.syncing = false; S.syncErr = false;
+    if (opts.bg) { syncPill(); repaint(); }
+    else { busy(false); repaint(); }
+    if (!opts.quiet) toast("โหลดข้อมูลล่าสุดแล้ว");
+  }).catch(function(e){
+    S.syncing = false;
+    if (/เซสชัน/.test(e.message)) { logout(); toast(e.message, true); return; }
+    S.syncErr = true;
+    if (opts.bg) { syncPill(); } else { busy(false); toast(e.message, true); }
+  });
+}
+function reload(quiet){ return refresh({quiet:quiet}); }
+/** เปลี่ยนปีงบประมาณที่กำลังดู */
+function switchFy(v){
+  if (v === "all") refresh({allFy:true, quiet:true}).then(function(){ toast("แสดงข้อมูลทุกปีงบประมาณ"); });
+  else refresh({fy:Number(v), quiet:true}).then(function(){ toast("แสดง" + fyLabel(Number(v))); });
+}
+
+/**
+ * แถบบอกความสดของข้อมูล — สำคัญเพราะหน้าจอเปิดจากแคชได้ทันที
+ * ถ้าดึงข้อมูลใหม่ไม่สำเร็จ ต้องบอกให้ชัดว่าที่เห็นอยู่อาจไม่ใช่ข้อมูลล่าสุด
+ */
+function syncState(){
+  if (S.syncing) return {cls:"", html:'<span class="spin"></span>กำลังอัปเดต'};
+  if (S.syncErr)  return {cls:" bad",
+    html:ICON.alert + 'อัปเดตไม่สำเร็จ<span class="wide-only"> — แตะเพื่อลองใหม่</span>'};
+  var mins = S.lastSync ? Math.round((Date.now() - S.lastSync)/60000) : 9999;
+  if (mins >= 10) return {cls:" old",
+    html:ICON.alert + esc(agoText()) + '<span class="wide-only"> — แตะเพื่ออัปเดต</span>'};
+  return {cls:" hide", html:""};
+}
+function syncPill(){
+  var el = document.getElementById("sync");
+  if (!el) return;
+  var st = syncState();
+  el.className = "syncpill" + st.cls;
+  el.innerHTML = st.html;
+}
+function agoText(){
+  if (!S.lastSync) return "";
+  var m = Math.round((Date.now() - S.lastSync)/60000);
+  if (m < 1) return "อัปเดตเมื่อสักครู่";
+  if (m < 60) return "อัปเดต " + m + " นาทีที่แล้ว";
+  return "อัปเดต " + Math.round(m/60) + " ชม.ที่แล้ว";
+}
+
+function logout(){
+  store("bs_token", null);
+  clearCache();
+  S.D = null; S.user = null; S.admin = null; S.page = "dash"; S.modal = null; S.editBag = null;
+  S.filter = {}; S.mv = ""; S.lastSync = 0; S.allLoaded = false; busy(false);
+  paint();
+}
+
+function saveIssue(){
+  var hn = hnOf($("#i-hn").value);
+  if (!hn) return toast("กรุณาระบุผู้ป่วย — พิมพ์ HN หรือชื่อ แล้วเลือกจากรายการ", true);
+  var payload = {
+    hn: hn, donorNo: ($("#i-donor").value||"").trim(),
+    comp: $("#i-comp").value, donorAbo: $("#i-abo").value, unit: $("#i-unit").value,
+    tempOut: $("#i-temp").value, labIssuer: $("#i-issuer").value, carrier: $("#i-carrier").value,
+    issuedAt: nowLocal()
+  };
+  var fake = {hn:hn, comp:payload.comp, donorAbo:payload.donorAbo};
+  var bad = aboCheck(fake), hot = tempFlag(payload.tempOut);
+  busy(true);
+  rpc("saveIssue", payload).then(function(d){
+    patchBag(d.bag);
+    busy(false); paint();
+    toast(bad ? "บันทึกแล้ว — แต่หมู่เลือดไม่เข้ากัน โปรดตรวจสอบก่อนให้เลือด"
+         : hot ? "บันทึกแล้ว — " + hot + " ควรตรวจสอบระบบขนส่ง"
+         : "บันทึกการจ่ายเลือดเรียบร้อย", !!(bad||hot));
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function saveTx(id, close){
+  var checks = [].slice.call(document.querySelectorAll(".v-check")).map(function(c){ return c.checked; });
+  var reacted = document.querySelector('input[name="react"]:checked').value === "1";
+  var payload = {
+    bagId:id, close:close,
+    v1:checks[0], v2:checks[1], v3:checks[2], v4:checks[3],
+    tempIn: $("#t-tempin").value, dx: $("#t-dx").value, volume: $("#t-vol").value,
+    checker: $("#t-checker").value, giver: $("#t-giver").value,
+    startD: $("#t-startd").value, start: $("#t-start").value,
+    endD: $("#t-endd").value, end: $("#t-end").value,
+    reaction: reacted, reactAt: reacted ? $("#t-rtime").value : "",
+    symptoms: reacted ? [].slice.call(document.querySelectorAll(".v-sym:checked")).map(function(c){ return c.value; }) : [],
+    actions:  reacted ? [].slice.call(document.querySelectorAll(".v-act:checked")).map(function(c){ return c.value; }) : [],
+    setLeft: $("#t-set").value, leak: $("#t-leak").value || "ไม่มี",
+    rbc: $("#t-rbc").value, note: $("#t-note").value
+  };
+  busy(true);
+  rpc("saveTransfusion", payload).then(function(d){
+    patchBag(d.bag);
+    S.editBag = null;
+    busy(false); paint();
+    toast(close ? (reacted ? "ปิดถุงแล้ว — บันทึกปฏิกิริยาเข้าทะเบียนเฝ้าระวัง" : "ปิดถุงเลือดเรียบร้อย")
+                : "บันทึกไว้แล้ว ยังให้เลือดไม่เสร็จ");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function saveReturn(id){
+  var payload = {
+    bagId:id, at:nowLocal(), reason:$("#r-reason").value, tempBack:$("#r-temp").value,
+    cond:$("#r-cond").value, by:$("#r-by").value, labReceiver:$("#r-lab").value, note:$("#r-note").value
+  };
+  busy(true);
+  rpc("saveReturn", payload).then(function(d){
+    patchBag(d.bag);
+    S.modal = null;
+    busy(false); paint();
+    toast("บันทึกการคืนถุงเลือดเรียบร้อย");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function savePin(){
+  var a = $("#p-new").value, b = $("#p-new2").value;
+  if (a.length < 4) return toast("รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร", true);
+  if (a !== b) return toast("รหัสผ่านทั้งสองช่องไม่ตรงกัน", true);
+  if (a === "1234") return toast("ห้ามใช้ 1234 เป็นรหัสผ่าน กรุณาตั้งรหัสใหม่", true);
+  busy(true);
+  rpc("changePin", {pin:a}).then(function(){
+    busy(false); S.modal = null; paint(); toast("เปลี่ยนรหัสผ่านเรียบร้อย");
+    refresh({});   // โหลดข้อมูลเต็ม (กรณีเพิ่งเปลี่ยนจากรหัสเริ่มต้น)
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function saveUserForm(isNew){
+  var payload = {
+    username: $("#u-user").value, name: $("#u-name").value, role: $("#u-role").value,
+    unit: $("#u-unit").value, active: $("#u-active").value === "1"
+  };
+  var pin = $("#u-pin").value;
+  if (pin) payload.pin = pin;
+  if (isNew && !pin) payload.pin = "1234";
+  if (!isNew) payload.reason = ($("#u-reason")||{}).value || "";
+  busy(true);
+  rpc("saveUser", payload).then(function(d){
+    if (d.mv) S.mv = d.mv;
+    S.modal = null; S.admin = null;
+    return loadAdmin().then(function(){ busy(false); paint(); toast("บันทึกผู้ใช้งานเรียบร้อย"); });
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function saveStaffForm(){
+  var m = S.modal || {};
+  var payload = {
+    name: $("#s-name").value, unit: $("#s-unit").value,
+    job: $("#s-job").value, active: $("#s-active").value === "1"
+  };
+  if (m.name) { payload.oldName = m.name; payload.reason = ($("#s-reason")||{}).value || ""; }
+  var target = m.target, snap = m.form;
+  busy(true);
+  rpc("saveStaff", payload).then(function(d){
+    patchMaster("staff", d.row, d.oldName, d.mv);
+    S.modal = null;
+    busy(false); paint(); restoreForm(snap);
+    var el = target && document.getElementById(target);
+    if (el) el.value = d.name;
+    toast(d.isNew ? "เพิ่ม " + d.name + " เข้ารายชื่อแล้ว" : "บันทึกข้อมูลเจ้าหน้าที่แล้ว");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function savePatientForm(){
+  var m = S.modal || {};
+  var payload = {hn: $("#pt-hn").value.trim(), name: $("#pt-name").value.trim(),
+                 abo: $("#pt-abo").value, rh: $("#pt-rh").value};
+  if (m.hn) { payload.oldHn = m.hn; payload.reason = ($("#pt-reason")||{}).value || ""; }
+  var snap = m.form;
+  busy(true);
+  rpc("savePatient", payload).then(function(d){
+    patchMaster("patient", d.row, d.oldHn, d.mv);
+    S.modal = null;
+    busy(false); paint(); restoreForm(snap);
+    var el = document.getElementById("i-hn");
+    if (el) { el.value = d.hn + " — " + d.name; hnInfo(); }
+    toast(d.isNew ? "เพิ่มผู้ป่วย " + d.name + " แล้ว" : "แก้ไขทะเบียนผู้ป่วยแล้ว");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+/** ผู้ดูแลระบบบันทึกการแก้ไขถุงเลือดย้อนหลัง — ส่งทุกช่องไป ให้เซิร์ฟเวอร์เทียบว่าอะไรเปลี่ยนจริง */
+function saveEditBag(id){
+  var v = function(x){ var el = document.getElementById(x); return el ? el.value : ""; };
+  var checks = [].slice.call(document.querySelectorAll(".e-check")).map(function(c){ return c.checked; });
+  var reacted = v("e-reaction") === "1";
+  var payload = {
+    bagId: id,
+    reason: v("e-reason"),
+    issue: {
+      issuedAt: v("e-issuedAt"), hn: v("e-hn").trim(), donorNo: v("e-donorNo").trim(),
+      comp: v("e-comp"), donorAbo: v("e-donorAbo"), tempOut: v("e-tempOut"),
+      labIssuer: v("e-labIssuer"), carrier: v("e-carrier"), unit: v("e-unit"), status: v("e-status")
+    },
+    tx: {
+      v1: !!checks[0], v2: !!checks[1], v3: !!checks[2], v4: !!checks[3],
+      tempIn: v("e-tempIn"), dx: v("e-dx"), volume: v("e-volume"),
+      checker: v("e-checker"), giver: v("e-giver"),
+      startDate: v("e-startDate"), startTime: v("e-startTime"),
+      endDate: v("e-endDate"), endTime: v("e-endTime"),
+      reaction: reacted, reactAt: reacted ? v("e-reactAt") : "",
+      symptoms: reacted ? [].slice.call(document.querySelectorAll(".e-sym:checked")).map(function(c){ return c.value; }) : [],
+      actions:  reacted ? [].slice.call(document.querySelectorAll(".e-act:checked")).map(function(c){ return c.value; }) : [],
+      setLeft: v("e-setLeft"), leak: v("e-leak"), rbc: v("e-rbc"), note: v("e-note")
+    },
+    ret: {
+      returnedAt: v("e-retAt"), reason: v("e-retReason"), returnedBy: v("e-retBy"),
+      labReceiver: v("e-retLab"), tempBack: v("e-tempBack"), cond: v("e-cond"), note: v("e-retNote")
+    }
+  };
+  busy(true);
+  rpc("adminEditBag", payload).then(function(d){
+    patchBag(d.bag);
+    S.modal = null; S.admin = null;
+    busy(false); paint();
+    toast("บันทึกการแก้ไขแล้ว " + d.changed + " ช่อง");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+/** ยกเลิก / กู้คืนถุงเลือด */
+function doVoidBag(id, undo){
+  var reason = ($("#v-reason")||{}).value || "";
+  busy(true);
+  rpc("voidBag", {bagId:id, undo:!!undo, reason:reason}).then(function(d){
+    patchBag(d.bag);
+    S.modal = null; S.admin = null;
+    busy(false); paint();
+    toast(undo ? "กู้คืนถุงเลือดแล้ว" : "ยกเลิกถุงเลือดแล้ว — ข้อมูลยังอยู่ กู้คืนได้ตลอด");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+/** บันทึกรายการตัวเลือก dropdown */
+function saveCfg(key){
+  var list = (($("#cf-list")||{}).value || "").split("\n")
+    .map(function(x){ return x.trim(); }).filter(Boolean);
+  busy(true);
+  rpc("saveConfig", {key:key, value:list, reason:($("#cf-reason")||{}).value || ""}).then(function(d){
+    if (d.mv) S.mv = d.mv;
+    S.modal = null; S.admin = null;
+    return refresh({quiet:true}).then(function(){
+      return loadAdmin().then(function(){ busy(false); paint(); toast("บันทึกค่าตั้งต้นแล้ว"); });
+    });
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+/** ดึงประวัติการแก้ไขย้อนหลังเพิ่ม */
+function moreLog(){
+  busy(true);
+  rpc("logPage", {limit:300}).then(function(d){
+    if (S.admin) S.admin.log = d.log;
+    S.logAll = true;
+    busy(false); paint(); toast("โหลดประวัติย้อนหลังเพิ่มแล้ว");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+/** แสดงผลการค้นหา HN ใต้ช่องกรอกแบบทันที */
+function hnInfo(){
+  var box = document.getElementById("i-hninfo"), inp = document.getElementById("i-hn");
+  if (!box || !inp) return;
+  var v = inp.value.trim();
+  if (!v) {
+    box.style.color = ""; 
+    box.innerHTML = "ทะเบียนผู้ป่วย " + P().length.toLocaleString() + " ราย · ถ้าเป็นผู้ป่วยใหม่ กดปุ่ม + เพื่อเพิ่ม";
+    return;
+  }
+  var hn = hnOf(v);
+  var f = P().filter(function(x){ return String(x.hn)===hn; })[0];
+  if (f) {
+    box.style.color = "var(--ok)";
+    box.innerHTML = "✓ " + esc(f.name) + (f.abo ? " · หมู่ " + esc(f.abo) + " " + esc(f.rh||"")
+      : ' · <b>ยังไม่ระบุหมู่เลือด — ระบบจะไม่เตือนหมู่เลือดไม่เข้ากัน</b>');
+  } else {
+    box.style.color = "var(--crit)";
+    box.innerHTML = "ไม่พบผู้ป่วยรายนี้" + (can("addPatient") ? " — กดปุ่ม + เพื่อเพิ่มผู้ป่วยใหม่" : "");
+  }
+}
+
+/**
+ * หน้าตรวจสอบระบบ — ใช้ตอบคำถามว่า "ทำไมหน้าจอไม่มีข้อมูล"
+ * บอกให้เห็นชัดว่าได้รับอะไรมาจากเซิร์ฟเวอร์จริง ๆ
+ */
+function pageDiag(){
+  var b = bags(), first = b[0];
+  var row = function(k, v, bad){
+    return '<tr><td class="nw">'+esc(k)+'</td><td class="'+(bad?"":"")+'" style="'+
+      (bad?"color:var(--crit);font-weight:600":"")+'">'+v+'</td></tr>';
+  };
+  var yes = function(ok){ return ok ? '<span class="pill p-done">ปกติ</span>'
+                                    : '<span class="pill p-react">มีปัญหา</span>'; };
+  var mode = LIVE ? (S.transport || "—") : "โหมดตัวอย่าง (ไม่ได้ต่อเซิร์ฟเวอร์)";
+  var okVer = !S.verBad;
+  var okBag = !b.length || !!(first && first.id && first.comp !== undefined);
+  var okCfg = cfg("units").length > 0 && cfg("components").length > 0;
+  var okPat = P().length > 0;
+
+  return '' +
+  '<div class="alert '+((okVer&&okBag&&okCfg)?"a-ok":"a-crit")+'">'+((okVer&&okBag&&okCfg)?ICON.drop:ICON.alert)+
+    '<div>'+((okVer&&okBag&&okCfg)
+      ? '<b>ระบบทำงานปกติ</b> — ข้อมูลที่ได้รับจากเซิร์ฟเวอร์อ่านได้ครบถ้วน'
+      : '<b>พบปัญหา</b> — ดูรายการที่เป็นสีแดงด้านล่าง แล้วส่งภาพหน้าจอนี้ให้ผู้ดูแลระบบ')+'</div></div>' +
+
+  '<section class="card"><div class="card-h"><h2>รุ่นของโปรแกรม</h2>' +
+    '<div class="spacer"></div>'+yes(okVer)+'</div>' +
+  '<div class="card-b tablewrap"><table class="narrow"><tbody>' +
+    row('Index.html (หน้าเว็บ)', esc(UI_VERSION)) +
+    row('Code.gs (เซิร์ฟเวอร์)', esc(S.serverVer || "—"), S.verBad) +
+    row('รูปแบบการส่งข้อมูล', esc(mode), S.transport === "แบบเก่า (เสี่ยงข้อมูลเพี้ยน)") +
+  '</tbody></table></div></section>' +
+
+  '<section class="card"><div class="card-h"><h2>ข้อมูลที่ได้รับ</h2>' +
+    '<div class="spacer"></div>'+yes(okBag && okCfg && okPat)+'</div>' +
+  '<div class="card-b tablewrap"><table class="narrow"><tbody>' +
+    row('ถุงเลือด', b.length + ' ถุง') +
+    row('อ่านข้อมูลถุงเลือดได้', okBag ? 'ได้' : 'ไม่ได้ — ทุกช่องว่าง', !okBag) +
+    row('ทะเบียนผู้ป่วย', P().length.toLocaleString() + ' ราย', !okPat) +
+    row('รายชื่อเจ้าหน้าที่', ((S.D&&S.D.staff)||[]).length + ' คน', !((S.D&&S.D.staff)||[]).length) +
+    row('ตัวเลือกหน่วยงาน', cfg("units").length + ' รายการ', !cfg("units").length) +
+    row('ตัวเลือกชนิดเลือด', cfg("components").length + ' รายการ', !cfg("components").length) +
+    row('ช่วงข้อมูลที่โหลด', S.allFy ? 'ทุกปีงบประมาณ' : esc(fyLabel(S.fy) + ' (' + fyRangeText() + ')')) +
+    row('ปีงบประมาณปัจจุบัน', esc(String(S.currentFy || "—"))) +
+    row('อัปเดตล่าสุด', esc(agoText() || "—")) +
+  '</tbody></table></div></section>' +
+
+  (first ? '<section class="card"><div class="card-h"><h2>ตัวอย่างถุงเลือดใบแรก</h2></div>' +
+  '<div class="card-b tablewrap"><table class="narrow"><tbody>' +
+    row('รหัสถุง', esc(first.id || "(ว่าง)"), !first.id) +
+    row('วันที่จ่าย', esc(first.issuedAt || "(ว่าง)"), !first.issuedAt) +
+    row('HN', esc(first.hn || "(ว่าง)"), !first.hn) +
+    row('Donor No.', esc(first.donorNo || "(ว่าง)"), !first.donorNo) +
+    row('ชนิดเลือด', esc(first.comp || "(ว่าง)"), !first.comp) +
+    row('หน่วยงาน', esc(first.unit || "(ว่าง)"), !first.unit) +
+    row('สถานะ', esc(first.status || "(ว่าง)"), !first.status) +
+  '</tbody></table></div></section>' : '') +
+
+  '<section class="card"><div class="card-h"><h2>แก้ปัญหาเบื้องต้น</h2></div>' +
+  '<div class="card-b" style="display:flex;flex-direction:column;gap:12px">' +
+    '<div class="alert a-info">'+ICON.gear+'<div>ถ้าข้อมูลดูผิดปกติ ลองล้างข้อมูลที่เก็บไว้ในเครื่องนี้แล้วโหลดใหม่ทั้งหมด ' +
+      'ข้อมูลจริงใน Google Sheet ไม่ถูกแตะต้อง</div></div>' +
+    '<div class="actions">' +
+      '<button class="btn" data-act="hardReload">ล้างข้อมูลในเครื่องแล้วโหลดใหม่</button>' +
+      '<button class="btn quiet" data-act="reload">ดึงข้อมูลล่าสุด</button>' +
+    '</div>' +
+  '</div></section>';
+}
+
+/** ข้อมูลของหน้าตั้งค่าระบบ โหลดตอนเปิดหน้านั้นเท่านั้น */
+function loadAdmin(){
+  if (S.admin) return Promise.resolve(S.admin);
+  return rpc("adminData", {}).then(function(d){ S.admin = d; return d; });
+}
+function adminSkeleton(){
+  var bar = function(w){ return '<div class="skel" style="width:'+w+'"></div>'; };
+  return '<section class="card"><div class="card-h"><h2>กำลังโหลดข้อมูลผู้ดูแลระบบ</h2>' +
+    '<div class="spacer"></div><span class="syncpill"><span class="spin"></span>กำลังโหลด</span></div>' +
+    '<div class="card-b" style="display:flex;flex-direction:column;gap:10px">' +
+    bar("70%")+bar("90%")+bar("55%")+bar("80%")+bar("65%") + '</div></section>' +
+    '<div class="alert a-info">'+ICON.gear+'<div>รายชื่อผู้ใช้และเจ้าหน้าที่ทั้งหมดโหลดเฉพาะตอนเปิดหน้านี้ ' +
+    'หน้าจออื่นจึงเปิดได้เร็วโดยไม่ต้องรอข้อมูลชุดนี้</div></div>';
+}
+
+function buildCsvLocal(){
+  var rows = [["วันที่จ่าย","รหัสถุง","HN","ชื่อ-สกุล","หมู่เลือดผู้ป่วย","ชนิดเลือด","หมู่ Donor","Donor No.",
+    "หน่วยงาน","ข้อบ่งชี้","ปริมาตร(cc)","วันที่เริ่มให้","เวลาเริ่มให้","วันที่เลือดหมด","เวลาเลือดหมด",
+    "ผู้ตรวจสอบ","ผู้ให้เลือด","ปฏิกิริยา",
+    "อาการ","การแก้ไข","สถานะ"]];
+  bags().forEach(function(b){ var p=pt(b.hn), t=b.tx||{};
+    rows.push([b.issuedAt,b.id,b.hn,p.name,p.abo,b.comp,b.donorAbo,b.donorNo,b.unit,t.dx||"",t.volume||"",
+      t.startD||"",t.start||"",t.endD||"",t.end||"",t.checker||"",t.giver||"",t.reaction?"มี":(b.tx?"ไม่มี":""),
+      (t.symptoms||[]).join(" / "),(t.actions||[]).join(" / "),(STATUS[b.status]||{}).label||b.status]);
+  });
+  return "﻿" + rows.map(function(r){ return r.map(function(c){
+    return '"' + String(c==null?"":c).replace(/"/g,'""') + '"'; }).join(","); }).join("\r\n");
+}
+
+function exportCsv(){
+  if (!LIVE) {
+    // หน้าตัวอย่างที่ฝังใน claude.ai ดาวน์โหลดไฟล์ไม่ได้ — ในระบบจริงบน Apps Script ดาวน์โหลดได้ทันที
+    return toast("โหมดตัวอย่างดาวน์โหลดไฟล์ไม่ได้ — เมื่อติดตั้งบน Apps Script แล้วปุ่มนี้จะบันทึกไฟล์ CSV ทันที");
+  }
+  busy(true);
+  rpc("exportCsv", S.allFy ? {allFy:true} : {fy:S.fy}).then(function(d){
+    busy(false);
+    var blob = new Blob([d.csv], {type:"text/csv;charset=utf-8"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "bloodsafe-" + (S.allFy ? "ทุกปี" : "ปีงบ" + S.fy) + "-" + nowLocal().slice(0,10) + ".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    toast("ดาวน์โหลดไฟล์ CSV แล้ว");
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   16. เหตุการณ์
+   ═══════════════════════════════════════════════════════════ */
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-act]");
+  if (!el) return;
+  var a = el.dataset.act;
+
+  // ปิด overlay เฉพาะเมื่อแตะพื้นหลัง
+  if (a === "closeModal" && el.classList.contains("overlay") && e.target.closest("[data-stop]")) return;
+
+  switch (a) {
+    case "fill":
+      S.loginUser = el.dataset.u; S.loginErr = ""; paint();
+      var pw = $("#lp"); if (pw) { pw.value = "1234"; pw.focus(); }
+      return;
+    case "login": doLogin(); return;
+    case "logout": logout(); return;
+    case "reload": S.modal = null; S.admin = null; reload(); return;
+    case "go":
+      S.page = el.dataset.p; S.editBag = null; S.modal = null; S.limit = 40;
+      if (el.dataset.p !== "issue") S.issueUnit = "";
+      paint(); window.scrollTo(0,0); return;
+    case "menu": openModal({type:"menu"}); return;
+    case "pin": openModal({type:"pin"}); return;
+    case "savePin": savePin(); return;
+    case "newUser": openModal({type:"user", username:""}); return;
+    case "editUser": openModal({type:"user", username:el.dataset.u}); return;
+    case "saveUser": saveUserForm(el.dataset.new === "1"); return;
+    case "addStaff":
+      openModal({type:"staff", name:"", unit:el.dataset.unit || (S.D.units ? S.D.units[0] : ""),
+                 job:el.dataset.job, target:el.dataset.target});
+      return;
+    case "newStaff": openModal({type:"staff", name:"", unit:"", job:"พยาบาล"}); return;
+    case "editStaff": openModal({type:"staff", name:el.dataset.n}); return;
+    case "saveStaff": saveStaffForm(); return;
+    case "addPatient": openModal({type:"patient", hn:""}); return;
+    case "editPatient": openModal({type:"patient", hn:el.dataset.hn}); return;
+    case "savePatient": savePatientForm(); return;
+    case "editBag": openModal({type:"editbag", id:el.dataset.id}); return;
+    case "saveEditBag": saveEditBag(el.dataset.id); return;
+    case "askVoid": openModal({type:"void", id:el.dataset.id}); return;
+    case "doVoid": doVoidBag(el.dataset.id, el.dataset.undo === "1"); return;
+    case "editCfg": openModal({type:"cfg", key:el.dataset.k}); return;
+    case "saveCfg": saveCfg(el.dataset.k); return;
+    case "moreLog": moreLog(); return;
+    case "theme": {
+      var cur = document.documentElement.getAttribute("data-theme");
+      var dark = cur ? cur==="dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var next = dark ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      store("bs_theme", next);
+      return;
+    }
+    case "startTx":
+      S.page = "transfuse"; S.editBag = el.dataset.id; S.modal = null;
+      paint(); window.scrollTo(0,0); return;
+    case "reloadStaff": return;
+    case "cancelTx": S.editBag = null; paint(); window.scrollTo(0,0); return;
+    case "saveIssue": saveIssue(); return;
+    case "saveTx": saveTx(el.dataset.id, el.dataset.close === "1"); return;
+    case "openReturn": openModal({type:"return", id:el.dataset.id}); return;
+    case "saveReturn": saveReturn(el.dataset.id); return;
+    case "detail": openModal({type:"detail", id:el.dataset.id}); return;
+    case "closeModal": closeModal(); return;
+    case "clearFilter": S.filter = {}; S.limit = 40; paint(); return;
+    case "more": S.limit += 40; paint(); return;
+    case "loadAll": switchFy("all"); return;
+    case "resync": if (!S.syncing) refresh({bg:true, quiet:true}); return;
+    case "hardReload":
+      clearCache(); S.mv = ""; S.admin = null; S.allLoaded = false;
+      S.modal = null; paint();
+      refresh({quiet:true}).then(function(){ toast("ล้างข้อมูลในเครื่องและโหลดใหม่เรียบร้อย"); });
+      return;
+    case "exportCsv": exportCsv(); return;
+    case "toggleReact": {
+      var on = el.value === "1";
+      document.getElementById("reactBox").classList.toggle("hide", !on);
+      [].slice.call(document.querySelectorAll('input[name="react"]')).forEach(function(r){
+        var lab = r.closest(".radio");
+        lab.classList.remove("on","on-crit");
+        if (r.checked) lab.classList.add(r.value==="1" ? "on-crit" : "on");
+      });
+      return;
+    }
+  }
+});
+
+// ติ๊ก double-check แล้วเปลี่ยนสีทันที
+document.addEventListener("change", function(e){
+  if (e.target.classList && e.target.classList.contains("v-check")) {
+    e.target.closest(".chk").classList.toggle("done", e.target.checked);
+  }
+  if (e.target.id === "i-unit") {
+    S.issueUnit = e.target.value;
+    var sel = document.getElementById("i-carrier");
+    if (sel) {
+      sel.innerHTML = staffOptions(S.issueUnit, ["ผู้ช่วยพยาบาล","พยาบาล"], "");
+      var plus = sel.parentNode.querySelector('[data-act="addStaff"]');
+      if (plus) plus.dataset.unit = S.issueUnit;
+    }
+  }
+  if (e.target.id === "fy-sel" || e.target.id === "f-fy") { switchFy(e.target.value); return; }
+  if (e.target.id === "t-endd") e.target.dataset.touched = "1";   // พยาบาลตั้งใจแก้เอง อย่าทับ
+  if (["t-startd","t-start","t-endd","t-end"].indexOf(e.target.id) >= 0) { syncTxDates(); return; }
+  var map = {"f-unit":"unit","f-comp":"comp","f-status":"status","f-react":"react"};
+  if (map[e.target.id]) { S.filter[map[e.target.id]] = e.target.value; S.limit = 40; paint(); }
+});
+
+var qTimer = null, ptTimer = null;
+document.addEventListener("input", function(e){
+  if (e.target.id === "i-hn") { hnInfo(); return; }
+  if (e.target.id === "e-hn") {   // แก้ถุงเลือด: บอกชื่อผู้ป่วยของ HN ที่พิมพ์ทันที
+    var box = document.getElementById("e-hninfo");
+    if (box) {
+      var who = pt(e.target.value.trim());
+      var found = !who.missing;
+      box.textContent = found ? who.name + (who.abo ? " · หมู่ " + who.abo + " " + (who.rh||"") : "")
+                              : "ไม่พบ HN นี้ในทะเบียนผู้ป่วย";
+      box.className = "hint" + (found ? "" : " hint-bad");
+    }
+    return;
+  }
+  if (e.target.id === "a-pq") {   // ค้นหาผู้ป่วยในหน้าตั้งค่าระบบ
+    var val = e.target.value, pos2 = e.target.selectionStart;
+    clearTimeout(ptTimer);
+    ptTimer = setTimeout(function(){
+      S.ptQuery = val; paint();
+      var n2 = $("#a-pq");
+      if (n2) { n2.focus(); try { n2.setSelectionRange(pos2,pos2); } catch(err){} }
+    }, 220);
+    return;
+  }
+  if (e.target.id === "t-endd") e.target.dataset.touched = "1";
+  if (["t-startd","t-start","t-endd","t-end"].indexOf(e.target.id) >= 0) { syncTxDates(); return; }
+  if (e.target.id !== "f-q") return;
+  var v = e.target.value, pos = e.target.selectionStart;
+  clearTimeout(qTimer);
+  qTimer = setTimeout(function(){
+    S.filter.q = v; S.limit = 40; paint();
+    var n = $("#f-q"); if (n) { n.focus(); try { n.setSelectionRange(pos,pos); } catch(err){} }
+  }, 220);
+});
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Enter" && !S.D && (e.target.id==="lu" || e.target.id==="lp")) doLogin();
+  if (e.key === "Escape" && S.modal) closeModal();
+});
+
+/* ═══════════════════════════════════════════════════════════
+   17. เริ่มทำงาน
+   ═══════════════════════════════════════════════════════════ */
+function paint(){
+  $("#root").innerHTML = S.booting ? '<div class="loader"><div class="spin"></div></div>'
+                       : (S.D ? viewApp() : viewLogin());
+  document.body.style.overflow = S.modal ? "hidden" : "";
+}
+/** วาดใหม่แบบรักษาสิ่งที่ผู้ใช้กรอกค้างไว้ — ใช้เวลาข้อมูลอัปเดตเบื้องหลัง */
+function repaint(){
+  var snap = snapForm();
+  paint();
+  restoreForm(snap);
+}
+
+/** ดึงข้อมูลใหม่เป็นระยะ และทุกครั้งที่ผู้ใช้กลับมาที่หน้าจอ */
+function startAutoSync(){
+  if (startAutoSync._on) return;
+  startAutoSync._on = true;
+  setInterval(function(){
+    if (S.D && !S.syncing && !S.busy && !document.hidden) refresh({bg:true, quiet:true});
+  }, 300000);
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden || !S.D || S.syncing || S.busy) return;
+    if (Date.now() - S.lastSync > 120000) refresh({bg:true, quiet:true});
+    else syncPill();
+  });
+  setInterval(syncPill, 60000);   // ให้ข้อความ "อัปเดตเมื่อ…" เดินตามเวลาจริง
+}
+
+(function boot(){
+  // ล้าง token/แคชที่รุ่นก่อน 2.5 เคยเก็บไว้ถาวรใน localStorage
+  try { Object.keys(localStorage).forEach(function(k){ if (isPrivateKey(k)) localStorage.removeItem(k); }); } catch(e){}
+  var th = store("bs_theme");
+  if (th) document.documentElement.setAttribute("data-theme", th);
+
+  var tk = store("bs_token");
+  if (!tk) { S.booting = false; return paint(); }
+
+  var c = loadCache();
+  if (c && c.user && c.mv) {
+    // มีข้อมูลเดิมอยู่ในเครื่อง — แสดงทันที แล้วค่อยดึงของใหม่เบื้องหลัง
+    applyCache(c);
+    S.page = (c.pages || ["dash"])[0];
+    S.booting = false; paint();
+    startAutoSync();
+    refresh({bg:true, quiet:true});
+    return;
+  }
+  rpc("bootstrap", {mv:""}).then(function(D){
+    applyBoot(D); S.page = (D.pages||["dash"])[0];
+    S.booting = false; paint(); startAutoSync();
+  }).catch(function(){
+    store("bs_token", null); clearCache(); S.booting = false; paint();
+  });
+})();
+</script>
+</body>
+</html>
